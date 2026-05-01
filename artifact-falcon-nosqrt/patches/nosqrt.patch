@@ -1,0 +1,467 @@
+diff -ruN Falcon-impl-20211101/Makefile Falcon-impl-20211101-nosqrt/Makefile
+--- Falcon-impl-20211101/Makefile	2020-10-07 12:18:34.000000000 +0900
++++ Falcon-impl-20211101-nosqrt/Makefile	2026-05-01 22:43:46.377213885 +0900
+@@ -45,6 +45,7 @@
+ 
+ CC = clang
+ CFLAGS = -Wall -Wextra -Wshadow -Wundef -O3 #-pg -fno-pie
++CFLAGS += -DNOSQRT 
+ LD = clang
+ LDFLAGS = #-pg -no-pie
+ LIBS = #-lm
+diff -ruN Falcon-impl-20211101/fpr.c Falcon-impl-20211101-nosqrt/fpr.c
+--- Falcon-impl-20211101/fpr.c	2020-10-07 12:18:34.000000000 +0900
++++ Falcon-impl-20211101-nosqrt/fpr.c	2026-04-30 13:46:41.118455842 +0900
+@@ -1026,6 +1026,7 @@
+ 
+ #endif // yyyASM_CORTEXM4-
+ 
++#ifndef NOSQRT
+ #if FALCON_ASM_CORTEXM4 // yyyASM_CORTEXM4+1
+ 
+ __attribute__((naked))
+@@ -1282,6 +1283,7 @@
+ }
+ 
+ #endif // yyyASM_CORTEXM4-
++#endif
+ 
+ uint64_t
+ fpr_expm_p63(fpr x, fpr ccs)
+diff -ruN Falcon-impl-20211101/fpr.h Falcon-impl-20211101-nosqrt/fpr.h
+--- Falcon-impl-20211101/fpr.h	2020-10-07 12:18:34.000000000 +0900
++++ Falcon-impl-20211101-nosqrt/fpr.h	2026-04-30 13:45:28.611484139 +0900
+@@ -227,6 +227,35 @@
+ 
+ static const fpr fpr_q = 4667981563525332992;
+ static const fpr fpr_inverse_of_q = 4545632735260551042;
++#ifdef NOSQRT
++static const fpr fpr_inv_sqrsigma0 = 4599107106141092802;
++static const fpr fpr_inv_sigmasq[] = {
++	0, /* unused */
++	4542161983842799767,
++	4541969184963877452,
++	4541786668691830928,
++	4541530443925315398,
++	4541293198771130321,
++	4541072899699384411,
++	4540867793667067539,
++	4540676361370237335,
++	4540497279544169632,
++	4540329390332230673
++};
++static const fpr fpr_sigma_minsq[] = {
++	0, /* unused */
++	4608292967046874016,
++	4608451112057414566,
++	4608609257067955117,
++	4608846474583754941,
++	4609083692099557987,
++	4609320909615363312,
++	4609558127131170248,
++	4609795344646978323,
++	4610032562162787204,
++	4610269779678596654
++};
++#else
+ static const fpr fpr_inv_2sqrsigma0 = 4594603506513722306;
+ static const fpr fpr_inv_sigma[] = {
+ 	0,  /* unused */
+@@ -254,6 +283,7 @@
+ 	4608433670533905013,
+ 	4608525754002622308
+ };
++#endif
+ static const fpr fpr_log2 = 4604418534313441775;
+ static const fpr fpr_inv_log2 = 4609176140021203710;
+ static const fpr fpr_bnorm_max = 4670353323383631276;
+@@ -456,8 +486,10 @@
+ 	return fpr_div(4607182418800017408u, x);
+ }
+ 
++#ifndef NOSQRT
+ #define fpr_sqrt   Zf(fpr_sqrt)
+ fpr fpr_sqrt(fpr x);
++#endif
+ 
+ static inline int
+ fpr_lt(fpr x, fpr y)
+@@ -526,6 +558,35 @@
+ 
+ static const fpr fpr_q = { 12289.0 };
+ static const fpr fpr_inverse_of_q = { 1.0 / 12289.0 };
++#ifdef NOSQRT
++static const fpr fpr_inv_sqrsigma0 = { .301730097750745443064624326038 };
++static const fpr fpr_inv_sigmasq[] = {
++	{ 0.0 }, /* unused */
++	{ 0.0000476856447714512315556231886301540 },
++	{ 0.0000463791887503240829944688187908891 },
++	{ 0.0000451424103836566076947826120021905 },
++	{ 0.0000434061638305270476342617689834186 },
++	{ 0.0000417985281331575559006176232365677 },
++	{ 0.0000403057235570109593296541250184432 },
++	{ 0.0000389158710205869926361238441611976 },
++	{ 0.0000376186753199170104506284670406146 },
++	{ 0.0000364051696644465404984050001360528 },
++	{ 0.0000352675081124396790873005275176492 }
++};
++static const fpr fpr_sigma_minsq[] = {
++	{ 0.0 }, /* unused */
++	{ 1.2465912467234616198867198206858534 },
++	{ 1.2817064931098030580911891204343519 },
++	{ 1.3168217394961444962956584201828503 },
++	{ 1.3694946090732137590747637581925245 },
++	{ 1.4221674786509985290952081243828392 },
++	{ 1.4748403482292892391380269458182684 },
++	{ 1.5275132178079377028015581925344062 },
++	{ 1.5801860873868391364762981224682970 },
++	{ 1.6328589569659194469614049928401405 },
++	{ 1.6855318265451262424521215687196602 }
++};
++#else
+ static const fpr fpr_inv_2sqrsigma0 = { .150865048875372721532312163019 };
+ static const fpr fpr_inv_sigma[] = {
+ 	{ 0.0 }, /* unused */
+@@ -553,6 +614,7 @@
+ 	{ 1.2778336969128335860256340575729042 },
+ 	{ 1.2982803343442918539708792538826807 }
+ };
++#endif
+ static const fpr fpr_log2 = { 0.69314718055994530941723212146 };
+ static const fpr fpr_inv_log2 = { 1.4426950408889634073599246810 };
+ static const fpr fpr_bnorm_max = { 16822.4121 };
+@@ -708,6 +770,7 @@
+ 	return FPR(x.v / y.v);
+ }
+ 
++#ifndef NOSQRT
+ #if FALCON_AVX2  // yyyAVX2+1
+ TARGET_AVX2
+ static inline void
+@@ -815,6 +878,7 @@
+ #endif
+ #endif  // yyyAVX2-
+ }
++#endif
+ 
+ static inline int
+ fpr_lt(fpr x, fpr y)
+diff -ruN Falcon-impl-20211101/inner.h Falcon-impl-20211101-nosqrt/inner.h
+--- Falcon-impl-20211101/inner.h	2020-10-07 12:18:34.000000000 +0900
++++ Falcon-impl-20211101-nosqrt/inner.h	2026-04-12 01:05:40.074684713 +0900
+@@ -1152,7 +1152,11 @@
+ 
+ typedef struct {
+ 	prng p;
++#ifdef NOSQRT
++	fpr sigma_minsq;
++#else
+ 	fpr sigma_min;
++#endif
+ } sampler_context;
+ 
+ TARGET_AVX2
+diff -ruN Falcon-impl-20211101/sign.c Falcon-impl-20211101-nosqrt/sign.c
+--- Falcon-impl-20211101/sign.c	2020-10-07 12:18:34.000000000 +0900
++++ Falcon-impl-20211101-nosqrt/sign.c	2026-05-01 22:52:04.351111604 +0900
+@@ -170,7 +170,11 @@
+ 		 * the value mandated by the specification: this
+ 		 * saves a division both here and in the sampler.
+ 		 */
++#ifdef NOSQRT
++		tree[0] = fpr_mul(tree[0], fpr_inv_sigmasq[orig_logn]);
++#else
+ 		tree[0] = fpr_mul(fpr_sqrt(tree[0]), fpr_inv_sigma[orig_logn]);
++#endif
+ 	} else {
+ 		ffLDL_binary_normalize(tree + n, orig_logn, logn - 1);
+ 		ffLDL_binary_normalize(tree + n + ffLDL_treesize(logn - 1),
+@@ -347,7 +351,11 @@
+ 		fpr leaf;
+ 
+ 		leaf = g00[0];
++#ifdef NOSQRT
++		leaf = fpr_mul(leaf, fpr_inv_sigmasq[orig_logn]);
++#else
+ 		leaf = fpr_mul(fpr_sqrt(leaf), fpr_inv_sigma[orig_logn]);
++#endif
+ 		t0[0] = fpr_of(samp(samp_ctx, t0[0], leaf));
+ 		t1[0] = fpr_of(samp(samp_ctx, t1[0], leaf));
+ 		return;
+@@ -1294,7 +1302,6 @@
+ {
+ 	int s, i;
+ 	fpr r;
+-	uint32_t sw, w;
+ 	uint64_t z;
+ 
+ 	/*
+@@ -1304,6 +1311,120 @@
+ 	s = (int)fpr_trunc(fpr_mul(x, fpr_inv_log2));
+ 	r = fpr_sub(x, fpr_mul(fpr_of(s), fpr_log2));
+ 
++#ifdef NOSQRT
++	z = fpr_expm_p63(r, ccs) - 1;
++
++	uint64_t ztop, zbot, ss, sw, u = 0, dvtop, dvbot = 0, a;
++	
++	/* First replace s with min(s,126), to avoid UB in the shift 
++	 * z >> (s-63). This is fine because if s>126, BerExp is nonzero
++	 * with probability < 2^{-64}: see the original Falcon code note
++	 * after the #else. Note that in our case, since the input x is
++	 * twice as large as in the orignal code, s is also twice as big.
++	 */
++	sw = (uint64_t)s;
++	sw ^= (sw ^ 126) & -((126 - sw) >> 63);
++	s = (int)sw;
++
++	/* We want to compare z' = 2^{63 - s} z (over 126-bit) to v' = u'^2
++	 * where u' is a uniform 63-bit number. To do so, we first compute
++	 * the top and bottom 63-bit halves of 2^{63 - s} z. The top is
++	 * just z >> min(s,63) (because shifting by the word size or more
++	 * is UB). The bottom is (z << (63-s))&0x7fff...ff if s<=63 and
++	 * z >> (s-63) otherwise.
++	 */
++	ss = (uint64_t)s;
++	ss = -((63 - ss) >> 63); /* ss = -1 if s>63 and 0 otherwise */
++	sw = (uint32_t)s;
++	sw^= (63 ^ sw) & ss;
++	ztop = z >> sw;
++	zbot = (z << (63-sw)) & ((-1-ss) >> 1);
++	sw = ss & (uint32_t)(s-63);
++	sw^= (63 ^ sw) & -((63 - sw) >> 31);
++	zbot^= (z >> sw) & ss;
++
++	/* At step j (j=1,...,16), corresponding to i=128-16j, the value u_j
++	 * is (8j-1)-bit long, and reprents the (8j-1)-bit prefix of the 63-bit 
++	 * uniform value u' (which we thus know is between 2^{64-8j} u_j and
++	 * 2^{64-8j}(u_j+1) excluded). Accordingly, v' is between 2^i u_j^2 and
++	 * 2^i (u_j+1)^2 excluded.
++	 *
++	 * If z' < 2^i u_j^2 or z' >= 2^i (u_j+1)^2, we know the result of the 
++	 * comparison between z' and v' already. Otherwise (i.e., iff 
++	 * 2^i u_j^2 <= z' < 2^i (u_j+1)^2), we proceed to the next step. This
++	 * happens with probability exactly 2^{-8} at every iteration, and
++	 * therefore no leakage occurs as a result of the early abort.
++	 *
++	 * Instead of comparing z' with those bounds at each step, we compute
++	 * z'_j = z' - 2^i u_j^2 iteratively by subtracting the incremental
++	 * difference. Then, the condition to proceed to the next step becomes:
++	 *
++	 *   0 <= z'_j < 2^i [(u_j+1)^2 - u_j^2] = 2^i (2u_j+1),
++	 *
++	 * which avoids the actual computation of the 126-bit squaring.
++	 */
++	i = 112;
++	do {
++	    a = prng_get_u8(p);
++	    if(i==112)
++		    a &= 0x7f;
++	    u = (u<<8) + a;
++	    dvtop = (a * (2*u - a)) << (i - 63);
++	    ztop -= dvtop;
++	    ss = ztop >> 63;
++	    sw = ((((2*u+1) << (i - 63)) - 1 - ztop) >> 63);
++
++	    if(ss | sw)
++		return (int)(1-ss);
++	    i-= 16;
++	} while(i >= 63);
++
++	do {
++	    a = prng_get_u8(p);
++	    u = (u<<8) + a;
++	    dvbot = a * (2*u - a);
++	    dvtop = dvbot >> (63-i);
++	    dvbot&= (1ull << (63-i)) - 1;
++	    dvbot<<= i;
++
++	    zbot -= dvbot;
++	    ztop -= dvtop + (zbot >> 63);
++	    zbot &= 0x7fffffffffffffff;
++	    ss = ztop >> 63;
++	    
++	    dvbot = 2*u+1;
++	    dvtop = dvbot >> (63-i);
++	    dvbot&= (1ull << (63-i)) - 1;
++	    dvbot = (dvbot << i) - 1;
++	    sw = (dvtop - ztop - ((dvbot - zbot) >> 63)) >> 63;
++	    
++	    if(ss | sw)
++    		return (int)(1-ss);
++	    i-= 16;
++	} while(i >= 16);
++
++    /* The last iteration is slightly more complicated, since u is now 
++     * up to 63-bit long, so that a*(2u-a) no longer fits within 64 bits.
++     * This code path is only hit with probability 2^{-56} however.
++     */
++	a = prng_get_u8(p);
++	u = (u<<8) + a;
++
++	uint64_t t, atbot, attop;
++	t = 2*u - a;
++	atbot = a * (t & ((1ull << 55) - 1));
++	attop = a * (t >> 55);
++	dvbot = atbot + ((attop & 0xff) << 55);
++	dvtop = (dvbot >> 63) + (attop >> 8);
++	dvbot&= 0x7fffffffffffffff;
++
++	zbot -= dvbot;
++	ztop -= dvtop + (zbot >> 63);
++	ss = ztop >> 63;
++	    
++	return (int)(1-ss);
++#else
++	uint32_t sw, w;
+ 	/*
+ 	 * It may happen (quite rarely) that s >= 64; if sigma = 1.2
+ 	 * (the minimum value for sigma), r = 0 and b = 1, then we get
+@@ -1342,6 +1463,7 @@
+ 		w = prng_get_u8(p) - ((uint32_t)(z >> i) & 0xFF);
+ 	} while (!w && i > 0);
+ 	return (int)(w >> 31);
++#endif
+ }
+ 
+ /*
+@@ -1372,12 +1494,19 @@
+ 	/*
+ 	 * dss = 1/(2*sigma^2) = 0.5*(isigma^2).
+ 	 */
++#ifdef NOSQRT
++	dss = isigma; /* no need to halve */
++#else
+ 	dss = fpr_half(fpr_sqr(isigma));
+-
++#endif
+ 	/*
+ 	 * ccs = sigma_min / sigma = sigma_min * isigma.
+ 	 */
++#ifdef NOSQRT
++	ccs = fpr_mul(isigma, spc->sigma_minsq);
++#else
+ 	ccs = fpr_mul(isigma, spc->sigma_min);
++#endif
+ 
+ 	/*
+ 	 * We now need to sample on center r.
+@@ -1427,7 +1556,11 @@
+ 		 * can be said to be constant-time.
+ 		 */
+ 		x = fpr_mul(fpr_sqr(fpr_sub(fpr_of(z), r)), dss);
++#ifdef NOSQRT
++		x = fpr_sub(x, fpr_mul(fpr_of(z0 * z0), fpr_inv_sqrsigma0));
++#else
+ 		x = fpr_sub(x, fpr_mul(fpr_of(z0 * z0), fpr_inv_2sqrsigma0));
++#endif
+ 		if (BerExp(&spc->p, x, ccs)) {
+ 			/*
+ 			 * Rejection sampling was centered on r, but the
+@@ -1466,7 +1599,11 @@
+ 		 * Normal sampling. We use a fast PRNG seeded from our
+ 		 * SHAKE context ('rng').
+ 		 */
++#ifdef NOSQRT
++		spc.sigma_minsq = fpr_sigma_minsq[logn];
++#else
+ 		spc.sigma_min = fpr_sigma_min[logn];
++#endif
+ 		Zf(prng_init)(&spc.p, rng);
+ 		samp = Zf(sampler);
+ 		samp_ctx = &spc;
+@@ -1511,7 +1648,11 @@
+ 		 * Normal sampling. We use a fast PRNG seeded from our
+ 		 * SHAKE context ('rng').
+ 		 */
++#ifdef NOSQRT
++		spc.sigma_minsq = fpr_sigma_minsq[logn];
++#else
+ 		spc.sigma_min = fpr_sigma_min[logn];
++#endif
+ 		Zf(prng_init)(&spc.p, rng);
+ 		samp = Zf(sampler);
+ 		samp_ctx = &spc;
+diff -ruN Falcon-impl-20211101/test_falcon.c Falcon-impl-20211101-nosqrt/test_falcon.c
+--- Falcon-impl-20211101/test_falcon.c	2020-10-07 12:18:34.000000000 +0900
++++ Falcon-impl-20211101-nosqrt/test_falcon.c	2026-05-02 00:55:16.950955439 +0900
+@@ -2704,7 +2704,9 @@
+ 		if (fpr_lt(a, fpr_zero)) {
+ 			a = fpr_neg(a);
+ 		}
++#ifndef NOSQRT
+ 		testfp_hash_d(&sc, fpr_sqrt(a));
++#endif
+ 
+ 		if ((ctr & 0x3FF) == 0) {
+ 			printf(".");
+@@ -2713,7 +2715,8 @@
+ 	}
+ 
+ 	/*
+-	 * Should be: 77cea0ea343b8c1c578af7c9fa3267b6
++	 * Should be: 77cea0ea343b8c1c578af7c9fa3267b6 with square roots,
++     *         or 7bdbfd557ab25e32064a86bbde22e4a9 without
+ 	 */
+ 
+ 	inner_shake256_flip(&sc);
+@@ -2722,10 +2725,18 @@
+ 	for (u = 0; u < sizeof tmp; u ++) {
+ 		printf("%02x", tmp[u]);
+ 	}
++#ifdef NOSQRT
++	hextobin(tmp2, sizeof tmp2, "7bdbfd557ab25e32064a86bbde22e4a9");
++#else
+ 	hextobin(tmp2, sizeof tmp2, "77cea0ea343b8c1c578af7c9fa3267b6");
++#endif
+ 	if (memcmp(tmp, tmp2, sizeof tmp) != 0) {
+ 		fprintf(stderr, "Wrong hash"
++#ifdef NOSQRT
++			" (expected: 7bdbfd557ab25e32064a86bbde22e4a9)\n");
++#else
+ 			" (expected: 77cea0ea343b8c1c578af7c9fa3267b6)\n");
++#endif
+ 		exit(EXIT_FAILURE);
+ 	}
+ 
+@@ -3460,7 +3471,11 @@
+ 		zz[z + MAX_DEV] = 0;
+ 	}
+ 	for (ctr = 0; ctr < NUM_SAMPLES; ctr ++) {
++#ifdef NOSQRT
++		z = Zf(sampler)(sc, mu, fpr_sqr(isigma));
++#else
+ 		z = Zf(sampler)(sc, mu, isigma);
++#endif
+ 		z -= c;
+ 		if (z < -MAX_DEV || z > +MAX_DEV) {
+ 			fprintf(stderr, "out-of-range sampled value: %d\n", z);
+@@ -3583,7 +3598,11 @@
+ 	inner_shake256_inject(&rng, (const void *)"test sampler", 12);
+ 	inner_shake256_flip(&rng);
+ 	Zf(prng_init)(&sc.p, &rng);
++#ifdef NOSQRT
++	sc.sigma_minsq = fpr_sigma_minsq[9];
++#else
+ 	sc.sigma_min = fpr_sigma_min[9];
++#endif
+ 
+ 	isigma = fpr_div(fpr_of(10), fpr_of(17));
+ 	mu = fpr_neg(fpr_one);
+@@ -5021,8 +5040,16 @@
+ 	test_sign();
+ 	test_keygen();
+ 	test_external_API();
++#ifdef NOSQRT
++	/* KATs need to be updated for the nosqrt implementation because we no
++     * longer lose precision from taking square roots and squaring back.
++     */
++	test_nist_KAT(9, "7964859cc3d3737002886fc9446c63c31c34d363");
++	test_nist_KAT(10, "5d09de2716d2981518042f69e9505cfdf03e46c0");
++#else
+ 	test_nist_KAT(9, "a57400cbaee7109358859a56c735a3cf048a9da2");
+ 	test_nist_KAT(10, "affdeb3aa83bf9a2039fa9c17d65fd3e3b9828e2");
++#endif
+ 	/* test_speed(); */
+ 
+ 	set_fpu_cw(old);

@@ -1,0 +1,41 @@
+--- vrfy.c	2024-09-29 12:35:40.683463395 +0900
++++ vrfy_mq.h	2026-05-02 03:55:01.155828368 +0900
+@@ -29,7 +29,9 @@
+  * @author   Thomas Pornin <thomas.pornin@nccgroup.com>
+  */
+ 
++#if 0
+ #include "inner.h"
++#endif
+ 
+ /* ===================================================================== */
+ /*
+@@ -590,6 +592,7 @@
+ /*
+  * Convert a polynomial (mod q) to Montgomery representation.
+  */
++#if 0
+ static void
+ mq_poly_tomonty(uint16_t *f, unsigned logn)
+ {
+@@ -600,6 +603,7 @@
+ 		f[u] = (uint16_t)mq_montymul(f[u], R2);
+ 	}
+ }
++#endif
+ 
+ /*
+  * Multiply two polynomials together (NTT representation, and using
+@@ -632,6 +636,7 @@
+ 
+ /* ===================================================================== */
+ 
++#if 0
+ /* see inner.h */
+ void
+ Zf(to_ntt_monty)(uint16_t *h, unsigned logn)
+@@ -869,3 +874,4 @@
+ 	}
+ 	return (int)r;
+ }
++#endif

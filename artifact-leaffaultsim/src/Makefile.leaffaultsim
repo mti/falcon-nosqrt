@@ -1,0 +1,63 @@
+.POSIX:
+
+CC = gcc
+CXX = g++
+CFLAGS = -Wall -Wextra -Wundef -O3 -fopenmp
+LD = gcc
+LDXX = g++
+LDFLAGS = -fopenmp
+LIBS = 
+
+# =====================================================================
+
+OBJ = codec.o common.o falcon.o fft.o fpr.o keygen.o rng.o shake.o sign.o vrfy.o 
+
+all: leaffaultsim 
+
+clean:
+	-rm -f $(OBJ) leaffaultsim.o
+
+leaffaultsim: leaffaultsim.o FalconKey.o $(OBJ)
+	$(LDXX) $(LDFLAGS) -o leaffaultsim leaffaultsim.o FalconKey.o $(OBJ) $(LIBS)
+
+codec.o: codec.c config.h inner.h fpr.h
+	$(CC) $(CFLAGS) -c -o codec.o codec.c
+
+common.o: common.c config.h inner.h fpr.h
+	$(CC) $(CFLAGS) -c -o common.o common.c
+
+falcon.o: falcon.c falcon.h config.h inner.h fpr.h
+	$(CC) $(CFLAGS) -c -o falcon.o falcon.c
+
+fft.o: fft.c config.h inner.h fpr.h
+	$(CC) $(CFLAGS) -c -o fft.o fft.c
+
+fpr.o: fpr.c config.h inner.h fpr.h
+	$(CC) $(CFLAGS) -c -o fpr.o fpr.c
+
+keygen.o: keygen.c config.h inner.h fpr.h
+	$(CC) $(CFLAGS) -c -o keygen.o keygen.c
+
+rng.o: rng.c config.h inner.h fpr.h
+	$(CC) $(CFLAGS) -c -o rng.o rng.c
+
+shake.o: shake.c config.h inner.h fpr.h
+	$(CC) $(CFLAGS) -c -o shake.o shake.c
+
+sign.o: sign.c config.h inner.h fpr.h Makefile
+	$(CC) $(CFLAGS) -c -o sign.o sign.c
+
+speed.o: speed.c falcon.h
+	$(CC) $(CFLAGS) -c -o speed.o speed.c
+
+test_falcon.o: test_falcon.c falcon.h config.h inner.h fpr.h
+	$(CC) $(CFLAGS) -c -o test_falcon.o test_falcon.c
+
+vrfy.o: vrfy.c config.h inner.h fpr.h
+	$(CC) $(CFLAGS) -c -o vrfy.o vrfy.c
+
+leaffaultsim.o: leaffaultsim.cpp
+	$(CXX) $(CFLAGS) -I$(EIGEN3_INCLUDE_DIR) -c -o leaffaultsim.o leaffaultsim.cpp
+
+FalconKey.o: FalconKey.cpp falcon.h config.h inner.h fpr.h 
+	$(CXX) $(CFLAGS) -I$(EIGEN3_INCLUDE_DIR) -c -o FalconKey.o FalconKey.cpp
