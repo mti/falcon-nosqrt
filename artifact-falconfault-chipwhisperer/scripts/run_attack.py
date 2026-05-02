@@ -40,7 +40,7 @@ def optimal_glitch_values(possible_values : List[float]) -> List[float]:
     min_in = lambda x : x - smin if in_range(x) else (smax - smin) + abs(x - smin)
     max_in = lambda x : smax - x if in_range(x) else (smax - smin) + abs(x - smin)
     max_under = lambda x : smin - x if 0 <= x < smin else 1000
-    max_above = lambda x : 1/(x - smax) if smax+0.1 <= x < 8 else 1000 
+    max_above = lambda x : 1/(x - smax) if smax+0.025 <= x < 8 else 1000 
     funcs = [min_in, max_in, max_under, max_above]
     optimal_values = set()
     for f in funcs:
@@ -65,6 +65,8 @@ def test_glitch_attack(possible_values : List[float], path_to_instance : str, nb
 
         outputs values for which we have a success
     """
+    success_file = Path(path_to_instance + "recovered")
+    success_file_nist = Path(path_to_instance + "nist_recovered")
     success_val = []
     success_oob_val = []
     close_enough = []
@@ -74,9 +76,12 @@ def test_glitch_attack(possible_values : List[float], path_to_instance : str, nb
         retval = run([FAULTSIM_EXE, path_to_instance, str(val), str(nbsigs), str(sigstep)])
         if retval.returncode == 0:
             success_val.append(val)
+            success_file.touch()
+            success_file_nist.touch()
             return (success_val, success_oob_val, close_enough) # no need to go further, we have a perfect attack
         elif retval.returncode == 1:
             success_oob_val.append(val)
+            success_file.touch()
             return (success_val, success_oob_val, close_enough) # no need to go further, we sorted the value so next attacks will still be oob
         elif retval.returncode == 2:
             close_enough.append(val)
@@ -153,15 +158,22 @@ def perform_recovery(path_to_instance_dir : str, max_nbsigs : int = 10_000_000, 
     
 def run_all_recovery(keys_id : List[int], template_path_to_instance_dir : str, rerun : bool = False, max_nbsigs : int = 10_000_000, sigstep : int = 10000):
     success_count = 0
+    nist_success_count = 0
     for id in keys_id:
         path_to_instance_dir = EXEC_DIR + f"{template_path_to_instance_dir}_{id}/"
         success_file = Path(path_to_instance_dir + "recovered")
+        success_file_nist = Path(path_to_instance_dir + "nist_recovered")
         if success_file.exists() and not rerun:
             success_count += 1
+            if success_file_nist.exists():
+                nist_success_count += 1
             print("key already recovered previously, skipping...  (use rerun = True to force key recovery)")
             continue
         retval = perform_recovery(path_to_instance_dir, max_nbsigs=max_nbsigs, sigstep=sigstep)
-        if retval == 0:
+        if retval in [0,1]:
             success_count += 1
             success_file.touch() # create a success file
-    print(f"recovered {success_count}/{len(keys_id)} ({success_count/len(keys_id) * 100:.2f}%) keys.")
+            if retval == 0:
+                nist_success_count += 1
+                success_file_nist.touch()
+    print(f"recovered {success_count}/{len(keys_id)} ({success_count/len(keys_id) * 100:.2f}%) keys, including {nist_success_count}/{len(keys_id)} ({nist_success_count/len(keys_id) * 100:.2f}%) within NIST bounds.")
