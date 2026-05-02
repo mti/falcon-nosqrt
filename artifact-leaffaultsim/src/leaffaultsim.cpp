@@ -12,6 +12,7 @@
 #include <string>
 #include "Eigen/Dense"
 #include "FalconKey.h"
+#include <termcolor/termcolor.hpp>
 
 using namespace Eigen;
 
@@ -20,13 +21,13 @@ static inline double linf_complex(const std::complex<double>& z)
     return std::max(std::abs(z.real()), std::abs(z.imag()));
 }
 
-static inline Eigen::VectorXcd round_vec_Zi(const Eigen::VectorXcd& x)
+static inline VectorXcd round_vec_Zi(const VectorXcd& x)
 {
     // Treat x as a real vector of length 2m: [Re(x0), Im(x0), Re(x1), Im(x1), ...]
-    Eigen::VectorXcd s(x.size());
-    Eigen::Map<const Eigen::VectorXd> xr(
+    VectorXcd s(x.size());
+    Map<const VectorXd> xr(
         reinterpret_cast<const double*>(x.data()), 2 * x.size());
-    Eigen::Map<Eigen::VectorXd> sr(
+    Map<VectorXd> sr(
         reinterpret_cast<double*>(s.data()), 2 * s.size());
 
     sr = xr.array().round().matrix();
@@ -34,10 +35,10 @@ static inline Eigen::VectorXcd round_vec_Zi(const Eigen::VectorXcd& x)
 }
 
 // Distance from s to the complex line <u>, i.e. || s - <u,s> u ||_2
-static inline double dist_to_line(const Eigen::VectorXcd& s, const Eigen::VectorXcd& u)
+static inline double dist_to_line(const VectorXcd& s, const VectorXcd& u)
 {
     std::complex<double> alpha = u.dot(s);     // u^* s  (Eigen uses conjugate on lhs)
-    Eigen::VectorXcd proj = alpha * u;
+    VectorXcd proj = alpha * u;
     return (s - proj).norm();
 }
 
@@ -52,7 +53,7 @@ bool attempt_recovery(const VectorXcd& u, const VectorXcd& target) {
 
     std::cerr << "[recovery] try for |z| in [" << Bmin << ", " << Bmax << "]...\n";
 
-    auto is_correct_test = [&](const Eigen::VectorXcd& s)->bool {
+    auto is_correct_test = [&](const VectorXcd& s)->bool {
         // Replace with real pubkey verifier in actual attack code.
         return (s - target).cwiseAbs().maxCoeff() == 0.0;
     };
@@ -91,7 +92,7 @@ bool attempt_recovery(const VectorXcd& u, const VectorXcd& target) {
     // We'll try a few pairs among the top indices. Usually (idx[0], idx[1]) is enough.
     bool found = false;
     std::complex<double> found_z(0.0, 0.0);
-    Eigen::VectorXcd found_s;
+    VectorXcd found_s;
 
     for(int p = 0; p < (int)idx.size() && !found; p++) {
         for(int q = p+1; q < (int)idx.size() && !found; q++) {
@@ -101,11 +102,6 @@ bool attempt_recovery(const VectorXcd& u, const VectorXcd& target) {
 
             auto Sj = enumerate_S(j);
             auto Sk = enumerate_S(k);
-
-            /*
-            std::cerr << "[recovery] trying pair (j,k)=(" << j << "," << k << ") "
-                      << "|Sj|=" << Sj.size() << " |Sk|=" << Sk.size() << "\n";
-            */
 
             const std::complex<double> uj = u[j];
             const std::complex<double> uk = u[k];
@@ -118,8 +114,8 @@ bool attempt_recovery(const VectorXcd& u, const VectorXcd& target) {
             #pragma omp parallel
             {
                 // Thread-local buffers to avoid repeated allocations
-                Eigen::VectorXcd x(u.size());
-                Eigen::VectorXcd s(u.size());
+                VectorXcd x(u.size());
+                VectorXcd s(u.size());
 
                 #pragma omp for schedule(static)
                 for(long long ia = 0; ia < (long long)Sj.size(); ia++) {
@@ -248,6 +244,10 @@ int main(int argc, char* argv[])
     MatrixXcd topsubspace;
     SelfAdjointEigenSolver<MatrixXcd> es;
 
+    VectorXcd evfirst, evlast;
+    double covlast, covfirst, maxcorr;
+
+    constexpr double ber_min = 1 / 1.8205, ber_max = 1 / 1.277833697;
 
     while(sigs_so_far < nsigs) {
 #pragma omp parallel
@@ -266,20 +266,48 @@ int main(int argc, char* argv[])
 
         es.compute(fullcov);
 
-        VectorXcd evfirst = es.eigenvectors().col(0);
-        VectorXcd evlast  = es.eigenvectors().col(GEN_SIZE-1);
+        evfirst  = es.eigenvectors().col(0);
+        evlast   = es.eigenvectors().col(GEN_SIZE-1);
 
-        std::cout << "Correlations after " << sigs_so_far << " signatures: " << (evlast.adjoint() * b0tildec).norm() << std::endl;
-        if(attempt_recovery(evlast, trueb0c))
-            return 0;
+        covlast  = ( evlast.adjoint() * b0tildec).norm(),
+        covfirst = (evfirst.adjoint() * b0tildec).norm(),
+        maxcorr  = std::max(covlast, covfirst);
+
+        std::cout << termcolor::bold << "Correlations after " << sigs_so_far 
+                  << " signatures: " << maxcorr << termcolor::reset << std::endl;
+
+        if (sigs_so_far > 1000000 && maxcorr < 0.2) {
+            std::cerr << termcolor::bright_red << "** Failing early "
+                      << "(correlation too low after 1M signatures) **"
+                      << termcolor::reset << std::endl;
+            return -1;
+        }
+
+        if(attempt_recovery(evfirst, trueb0c) || attempt_recovery(evlast, trueb0c)) {
+            std::cerr << termcolor::bright_green << "** Full key recovery achieved ";
+            if (ber_min <= faultyval && faultyval <= ber_max) {
+                std::cerr << "(and fault is within NIST bound)! **"
+                          << termcolor::reset << std::endl;
+                return 0;
+            }
+            else {
+                std::cerr << "(but fault is beyond NIST bound). **"
+                          << termcolor::reset << std::endl;
+                return 1;
+            }
+        }
+
     }
-    // -------------------- Recovery of s from the complex line <u> --------------------
-    Eigen::VectorXcd evlast = es.eigenvectors().col(GEN_SIZE-1);;
 
-    if(!attempt_recovery(evlast, trueb0c)) {
-        std::cerr << "[recovery] Not found. Not enough signatures?\n";
-        return 1;
+    if(maxcorr > 0.99) {
+        std::cerr << termcolor::bright_yellow << "** Full key recovery failed "
+                  << "so far (but will succeed with a few times more signatures) **"
+                  << termcolor::reset << std::endl;
+        return 2;
     }
 
-    return 0;
+    std::cerr << termcolor::bright_red << "** Full key recovery failed "
+              << "(>10 times more signatures likely needed for success) **"
+              << termcolor::reset << std::endl;
+    return -1;
 }

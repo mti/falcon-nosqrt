@@ -33,7 +33,9 @@
             cp -r ${falconReferenceImpl}/* .
             cp vrfy.c vrfy_mq.h
             patch vrfy_mq.h vrfy_mq.patch
-            make -f Makefile.leaffaultsim EIGEN3_INCLUDE_DIR=${pkgs.eigen_3_4_0}/include/eigen3
+            make -f Makefile.leaffaultsim \
+              EIGEN3_INCLUDE_DIR=${pkgs.eigen_3_4_0}/include/eigen3 \
+              TERMCOLOR_INCLUDE_DIR=${pkgs.termcolor}/include
 
             runHook postBuild
           '';
@@ -45,6 +47,7 @@
             mkdir -p $out/bin $out/share/falcon-artifact/source
 
             cp leaffaultsim $out/bin
+            cp instancegen $out/bin
             cp *.c *.cpp *.h Makefile* $out/share/falcon-artifact/source
 
             runHook postInstall

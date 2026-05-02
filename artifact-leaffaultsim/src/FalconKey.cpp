@@ -37,6 +37,12 @@ FalconKey::injectfault(double faultyval) {
     (*tree).v = faultyval;
 }
 
+double
+FalconKey::extractvalue() {
+    fpr *tree = align_fpr(expkey + 1) + 4*GEN_SIZE + 2*(GEN_SIZE - 1);
+    return (*tree).v;
+}
+
 FalconKey::FalconKey() {
     Prev = bitrev_permutation(GEN_LOGN);
 }

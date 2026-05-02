@@ -31,6 +31,7 @@ public:
     void keygen();
     void load(char* path);
     void injectfault(double faultyval);
+    double extractvalue();
 
     Eigen::MatrixXd gen_sigmatrix(size_t nsigs) const;
 };

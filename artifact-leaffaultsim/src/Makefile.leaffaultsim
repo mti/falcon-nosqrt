@@ -12,13 +12,16 @@ LIBS =
 
 OBJ = codec.o common.o falcon.o fft.o fpr.o keygen.o rng.o shake.o sign.o vrfy.o 
 
-all: leaffaultsim 
+all: leaffaultsim instancegen
 
 clean:
-	-rm -f $(OBJ) leaffaultsim.o
+	-rm -f $(OBJ) leaffaultsim.o instancegen.o
 
 leaffaultsim: leaffaultsim.o FalconKey.o $(OBJ)
 	$(LDXX) $(LDFLAGS) -o leaffaultsim leaffaultsim.o FalconKey.o $(OBJ) $(LIBS)
+
+instancegen: instancegen.o FalconKey.o $(OBJ)
+	$(LDXX) $(LDFLAGS) -o instancegen instancegen.o FalconKey.o $(OBJ) $(LIBS)
 
 codec.o: codec.c config.h inner.h fpr.h
 	$(CC) $(CFLAGS) -c -o codec.o codec.c
@@ -57,7 +60,10 @@ vrfy.o: vrfy.c config.h inner.h fpr.h
 	$(CC) $(CFLAGS) -c -o vrfy.o vrfy.c
 
 leaffaultsim.o: leaffaultsim.cpp
-	$(CXX) $(CFLAGS) -I$(EIGEN3_INCLUDE_DIR) -c -o leaffaultsim.o leaffaultsim.cpp
+	$(CXX) $(CFLAGS) -I$(EIGEN3_INCLUDE_DIR) -I$(TERMCOLOR_INCLUDE_DIR) -c -o leaffaultsim.o leaffaultsim.cpp
+
+instancegen.o: instancegen.cpp
+	$(CXX) $(CFLAGS) -I$(EIGEN3_INCLUDE_DIR) -c -o instancegen.o instancegen.cpp
 
 FalconKey.o: FalconKey.cpp falcon.h config.h inner.h fpr.h 
 	$(CXX) $(CFLAGS) -I$(EIGEN3_INCLUDE_DIR) -c -o FalconKey.o FalconKey.cpp
