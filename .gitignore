@@ -1,6 +1,11 @@
 *~
 *.swp
+*.ipynb
 artifact-falcon-nosqrt/result
 artifact-leaffaultsim/result
 artifact-leaffaultsim/key*
 artifact-falconfault-chipwhisperer/result
+artifact-falconfault-chipwhisperer/exec
+artifact-falconfault-chipwhisperer/cw_jupyter
+*.ipynb_checkpoints
+*__pycache__

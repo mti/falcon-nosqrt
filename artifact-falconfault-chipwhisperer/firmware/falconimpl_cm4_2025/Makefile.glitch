@@ -27,7 +27,6 @@
 #
 # To rebuild project do "make clean" then "make all".
 #----------------------------------------------------------------------------
-PLATFORM = CW308_STM32F4
 SS_VER = SS_VER_2_1
 FPUUSE = Y
 

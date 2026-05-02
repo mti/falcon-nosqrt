@@ -36,7 +36,7 @@
           pkgs.stdenv.mkDerivation {
             inherit name;
             pname = "falcon-speed-${name}";
-            version = "artifact";
+            version = "ccs2026artifact";
 
             src = falconReferenceImpl;
 

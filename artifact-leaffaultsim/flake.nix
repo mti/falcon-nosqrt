@@ -19,7 +19,7 @@
 
         leaffaultsim = pkgs.stdenv.mkDerivation {
           pname = "leaffaultsim";
-          version = "artifact";
+          version = "ccs2026artifact";
 
           src = ./src;
 
