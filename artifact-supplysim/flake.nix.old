@@ -1,0 +1,94 @@
+{
+  description = "Falcon dependency security analysis PoC artifact";
+
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
+    flake-utils.url = "github:numtide/flake-utils";
+    artifact-leaffaultsim.url = "path:../artifact-leaffaultsim";
+  };
+
+  outputs = { self, nixpkgs, flake-utils, artifact-leaffaultsim }:
+    flake-utils.lib.eachDefaultSystem (system:
+      let
+        pkgs = import nixpkgs { inherit system; };
+        lib = pkgs.lib;
+
+        leaffaultsim = artifact-leaffaultsim.packages.${system}.leaffaultsim;
+
+        mkSupplysim = cfg:
+          pkgs.stdenv.mkDerivation {
+            pname = "supplysim";
+            version = "ccs2026artifact";
+
+            src = ./src;
+
+            buildPhase = ''
+              runHook preBuild
+
+              cp -r ${leaffaultsim}/share/falcon-artifact/source/* .
+              patch fpr.h fpr-optnativesqrt.patch
+              make -f Makefile.supplysim \
+                CFLAGS_EXTRA="-fno-builtin-sqrt -DFORCE_NATIVESQRT" \
+                EIGEN3_INCLUDE_DIR=${pkgs.eigen_3_4_0}/include/eigen3 \
+                TERMCOLOR_INCLUDE_DIR=${pkgs.termcolor}/include
+
+              runHook postBuild
+            '';
+
+            installPhase = ''
+              runHook preInstall
+
+              mkdir -p $out/bin
+              mkdir -p $out/bin $out/share/falcon-artifact/source
+
+              cp supply_test $out/bin
+              cp *.c *.cpp *.h Makefile* $out/share/falcon-artifact/source
+
+              runHook postInstall
+            '';
+          };
+
+        supplysim = mkSupplysim {};
+
+        testAttackScript =
+          pkgs.writeShellScriptBin "run-falcon-supplysim" ''
+            set -eu
+            : "''${NUM_KEYS:=10}"
+            : "''${MAX_SIGS:=3000000}"
+            : "''${PER_CORE_BATCH_SIZE:=10000}"
+            cat <<EOF
+            Simulation of the key recovery attack against Falcon with a faulty leaf
+            -----------------------------------------------------------------------
+            * Keys to attack: key1 up to key''${NUM_KEYS}
+              (existing key files will be used if they exist; otherwise, they are
+               freshly generated);
+            * Maximum number of signature samples: ''${MAX_SIGS};
+            * Number of signatures processed at once on each core: ''${PER_CORE_BATCH_SIZE}
+            EOF
+            
+
+            for i in $(seq ''${NUM_KEYS}); do
+              rm -rf key$i
+              mkdir -p key$i
+              echo 
+              echo === Attacking key$i ===
+              ${leaffaultsim}/bin/instancegen key$i
+              LEAF_VAL=$(${supplysim}/bin/supply_test key$i) &&
+                ${leaffaultsim}/bin/leaffaultsim key$i $LEAF_VAL ''${MAX_SIGS} ''${PER_CORE_BATCH_SIZE}
+            done
+            '';
+
+      in {
+        packages = {
+          default = supplysim;
+          supplysim = supplysim;
+        };
+
+        apps = {
+          default = {
+            type = "app";
+            program = "${testAttackScript}/bin/run-falcon-supplysim";
+          };
+        };
+      });
+}

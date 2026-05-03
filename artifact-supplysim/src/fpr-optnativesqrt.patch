@@ -1,0 +1,12 @@
+--- fpr.h	2024-09-06 20:33:55.584238880 +0900
++++ fpr-nativesqrt.h	2026-05-03 16:29:56.947522437 +0900
+@@ -724,6 +724,9 @@
+ static inline fpr
+ fpr_sqrt(fpr x)
+ {
++#ifdef FORCE_NATIVESQRT
++	return FPR(sqrt(x.v));
++#endif
+ 	/*
+ 	 * We prefer not to have a dependency on libm when it can be
+ 	 * avoided. On x86, calling the sqrt() libm function inlines

@@ -1,0 +1,286 @@
+{
+  description = "Falcon dependency security analysis PoC artifact";
+
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
+    flake-utils.url = "github:numtide/flake-utils";
+    artifact-leaffaultsim.url = "path:../artifact-leaffaultsim";
+  };
+
+  outputs = { self, nixpkgs, flake-utils, artifact-leaffaultsim }:
+    flake-utils.lib.eachSystem [ "x86_64-linux" "aarch64-linux" ] (system:
+      let
+        pkgs = import nixpkgs { inherit system; };
+        lib = pkgs.lib;
+
+        leaffaultsim = artifact-leaffaultsim.packages.${system}.leaffaultsim;
+
+        # Cross package sets.  We use explicit GNU triples rather than
+        # pkgsCross attribute names so that the flake is less sensitive to
+        # nixpkgs renamings of convenience cross sets.
+        crossPkgs = triple: import nixpkgs {
+          localSystem = { inherit system; };
+          crossSystem = { config = triple; };
+        };
+
+        targetInfo = {
+          native = {
+            targetLabel = system;
+            pkgsFor = pkgs;
+            qemuArch = null;
+          };
+          i686 = {
+            targetLabel = "i686-linux";
+            pkgsFor = crossPkgs "i686-unknown-linux-gnu";
+            qemuArch = "i386";
+          };
+          aarch64 = {
+            targetLabel = "aarch64-linux";
+            pkgsFor = crossPkgs "aarch64-unknown-linux-gnu";
+            qemuArch = "aarch64";
+          };
+          powerpc = {
+            targetLabel = "powerpc-linux";
+            pkgsFor = crossPkgs "powerpc-unknown-linux-gnu";
+            qemuArch = "ppc";
+          };
+          powerpc64le = {
+            targetLabel = "powerpc64le-linux";
+            pkgsFor = crossPkgs "powerpc64le-unknown-linux-gnu";
+            qemuArch = "ppc64le";
+          };
+          riscv64 = {
+            targetLabel = "riscv64-linux";
+            pkgsFor = crossPkgs "riscv64-unknown-linux-gnu";
+            qemuArch = "riscv64";
+          };
+          loongarch64 = {
+            targetLabel = "loongarch64-linux";
+            pkgsFor = crossPkgs "loongarch64-unknown-linux-gnu";
+            qemuArch = "loongarch64";
+          };
+        };
+
+        # Each configuration is one point in the experiment matrix.
+        #
+        # noBuiltinSqrt: add -fno-builtin-sqrt to the Falcon/supply_test build.
+        # forceNativeSqrt: patch Falcon's fpr.h to bypass the handwritten
+        #   architecture-specific square-root code and define FORCE_NATIVESQRT,
+        #   forcing the generic native sqrt() path.
+        configs = {
+          native-default = {
+            target = "native";
+            noBuiltinSqrt = false;
+            forceNativeSqrt = false;
+          };
+          native-force-nativesqrt = {
+            target = "native";
+            noBuiltinSqrt = false;
+            forceNativeSqrt = true;
+          };
+          native-force-nativesqrt-fno-builtin = {
+            target = "native";
+            noBuiltinSqrt = true;
+            forceNativeSqrt = true;
+          };
+          i686-force-nativesqrt-fno-builtin = {
+            target = "i686";
+            noBuiltinSqrt = true;
+            forceNativeSqrt = true;
+          };
+          aarch64-force-nativesqrt-fno-builtin = {
+            target = "aarch64";
+            noBuiltinSqrt = true;
+            forceNativeSqrt = true;
+          };
+          powerpc64le-force-nativesqrt-fno-builtin = {
+            target = "powerpc64le";
+            noBuiltinSqrt = true;
+            forceNativeSqrt = true;
+          };
+          powerpc64le-force-nativesqrt = {
+            target = "powerpc64le";
+            noBuiltinSqrt = false;
+            forceNativeSqrt = true;
+          };
+          riscv64-fno-builtin = {
+            target = "riscv64";
+            noBuiltinSqrt = true;
+            forceNativeSqrt = false;
+          };
+          riscv64-default = {
+            target = "riscv64";
+            noBuiltinSqrt = false;
+            forceNativeSqrt = false;
+          };
+          loongarch64-default = {
+            target = "loongarch64";
+            noBuiltinSqrt = false;
+            forceNativeSqrt = false;
+          };
+        };
+
+        mkSupplysim = name: cfg:
+          let
+            ti = targetInfo.${cfg.target};
+            targetPkgs = ti.pkgsFor;
+            cflagsExtra = lib.concatStringsSep " " (
+              (lib.optional cfg.noBuiltinSqrt "-fno-builtin-sqrt")
+              ++ (lib.optional cfg.forceNativeSqrt "-DFORCE_NATIVESQRT")
+            );
+          in
+          targetPkgs.stdenv.mkDerivation {
+            pname = "supplysim-${name}";
+            version = "ccs2026artifact";
+
+            src = ./src;
+
+            buildPhase = ''
+              runHook preBuild
+
+              cp -r ${leaffaultsim}/share/falcon-artifact/source/* .
+              chmod -R u+w .
+
+              ${lib.optionalString cfg.forceNativeSqrt ''
+              patch fpr.h fpr-optnativesqrt.patch
+              ''}
+
+              make -f Makefile.supplysim \
+                CC="$CC" \
+                CXX="$CXX" \
+                LD="$CC" \
+                LDXX="$CXX" \
+                CFLAGS_EXTRA="${cflagsExtra}" \
+                EIGEN3_INCLUDE_DIR=${targetPkgs.eigen_3_4_0}/include/eigen3 \
+                TERMCOLOR_INCLUDE_DIR=${targetPkgs.termcolor}/include
+
+              runHook postBuild
+            '';
+
+            installPhase = ''
+              runHook preInstall
+
+              mkdir -p $out/bin $out/share/falcon-artifact/source
+              cp supply_test $out/bin/supply_test
+              cp -r . $out/share/falcon-artifact/source
+
+              cat > $out/share/falcon-artifact/config.txt <<EOF_CONFIG
+              name=${name}
+              target=${cfg.target}
+              targetLabel=${ti.targetLabel}
+              noBuiltinSqrt=${lib.boolToString cfg.noBuiltinSqrt}
+              forceNativeSqrt=${lib.boolToString cfg.forceNativeSqrt}
+              cflagsExtra=${cflagsExtra}
+              EOF_CONFIG
+
+              runHook postInstall
+            '';
+          };
+
+        packageSet = lib.mapAttrs mkSupplysim configs;
+
+        runnerFor = name: cfg:
+          let
+            ti = targetInfo.${cfg.target};
+            pkg = packageSet.${name};
+          in
+          pkgs.writeShellScriptBin "run-supplysim-${name}" (
+            if ti.qemuArch == null then ''
+              exec ${pkg}/bin/supply_test "$@"
+            '' else ''
+              exec ${pkgs.qemu}/bin/qemu-${ti.qemuArch} ${pkg}/bin/supply_test "$@"
+            ''
+          );
+
+        runnerSet = lib.mapAttrs runnerFor configs;
+
+        appSet = lib.mapAttrs (name: _cfg: {
+          type = "app";
+          program = "${runnerSet.${name}}/bin/run-supplysim-${name}";
+        }) configs;
+
+        # A small subset that demonstrates the intended contrast.  Override at
+        # runtime with e.g.
+        #   SUPPLYSIM_CONFIGS="native-fno-builtin riscv64-fno-builtin" nix run
+        defaultDemoConfigs = [
+          "native-force-nativesqrt-fno-builtin"
+          "aarch64-force-nativesqrt-fno-builtin"
+          "riscv64-fno-builtin"
+        ];
+
+        # Build the default demonstration script only from the selected subset,
+        # so that `nix run` does not force all cross-compiled variants to be
+        # built.  The full matrix is still available through individual apps.
+        demoConfigs = lib.genAttrs defaultDemoConfigs (name: configs.${name});
+
+        caseArms = lib.concatStringsSep "\n" (lib.mapAttrsToList (name: _cfg: ''
+          ${name})
+            ${runnerSet.${name}}/bin/run-supplysim-${name} "$2"
+            ;;
+        '') demoConfigs);
+
+        testAttackScript =
+          pkgs.writeShellScriptBin "run-falcon-supplysim" ''
+            set -eu
+            : "''${NUM_KEYS:=5}"
+            : "''${MAX_SIGS:=3000000}"
+            : "''${PER_CORE_BATCH_SIZE:=20000}"
+            : "''${SUPPLYSIM_CONFIGS:=${lib.concatStringsSep " " defaultDemoConfigs}}"
+
+            run_supply_test() {
+              case "$1" in
+            ${caseArms}
+                *)
+                  echo "Unknown demo configuration: $1" >&2
+                  echo "Demo configurations available through nix run:" >&2
+                  echo "  ${lib.concatStringsSep " " defaultDemoConfigs}" >&2
+                  echo "Other configurations are available as individual apps, e.g. nix run .#riscv64-force-nativesqrt-fno-builtin -- <keydir>" >&2
+                  return 2
+                  ;;
+              esac
+            }
+
+            cat <<EOF
+            Falcon sqrt supply-chain/dependency PoC
+            ---------------------------------------
+            * Keys to attack: key1 up to key''${NUM_KEYS}
+            * Maximum number of signature samples: ''${MAX_SIGS}
+            * Signatures processed per core batch: ''${PER_CORE_BATCH_SIZE}
+            * Configurations: ''${SUPPLYSIM_CONFIGS}
+            EOF
+
+            for i in $(seq "''${NUM_KEYS}"); do
+              rm -rf "key$i"
+              mkdir -p "key$i"
+              echo
+              echo "=== Generating key$i ==="
+              ${leaffaultsim}/bin/instancegen "key$i"
+
+              for cfg in ''${SUPPLYSIM_CONFIGS}; do
+                echo
+                echo "--- $cfg on key$i ---"
+                if LEAF_VAL=$(run_supply_test "$cfg" "key$i"); then
+                  echo "modified leaf value: $LEAF_VAL"
+                  ${leaffaultsim}/bin/leaffaultsim \
+                    "key$i" "$LEAF_VAL" \
+                    "''${MAX_SIGS}" "''${PER_CORE_BATCH_SIZE}"
+                else
+                  echo "supply_test failed for configuration $cfg" >&2
+                fi
+              done
+            done
+          '';
+
+      in {
+        packages = packageSet // {
+          default = packageSet.native-force-nativesqrt-fno-builtin;
+        };
+
+        apps = appSet // {
+          default = {
+            type = "app";
+            program = "${testAttackScript}/bin/run-falcon-supplysim";
+          };
+        };
+      });
+}

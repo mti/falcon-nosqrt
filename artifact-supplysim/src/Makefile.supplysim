@@ -1,0 +1,58 @@
+.POSIX:
+
+CC = gcc
+CXX = g++
+CFLAGS = -Wall -Wextra -Wundef -O3
+CFLAGS += -DFALCON_FPNATIVE=1 -DFALCON_AVX2=0
+CFLAGS += $(CFLAGS_EXTRA)
+LD = gcc
+LDXX = g++
+LDFLAGS = -fopenmp -Wl,--wrap=sqrt
+LIBS = -lm
+# =====================================================================
+
+OBJ = codec.o common.o falcon.o fft.o fpr.o keygen.o rng.o shake.o sign.o vrfy.o wrap_sqrt_poc.o
+
+all: supply_test
+
+clean:
+	-rm -f $(OBJ) supply_test supply_test.o FalconKey.o
+
+supply_test: supply_test.o FalconKey.o $(OBJ)
+	$(LDXX) $(LDFLAGS) -o $@ $^ $(LIBS)
+
+supply_test.o: supply_test.cpp
+	$(CXX) $(CFLAGS) -I$(EIGEN3_INCLUDE_DIR) -I$(TERMCOLOR_INCLUDE_DIR) -c -o $@ $<
+
+FalconKey.o: FalconKey.cpp falcon.h config.h inner.h fpr.h 
+	$(CXX) $(CFLAGS) -I$(EIGEN3_INCLUDE_DIR) -c -o $@ $<
+
+codec.o: codec.c config.h inner.h fpr.h
+	$(CC) $(CFLAGS) -c -o codec.o codec.c
+
+common.o: common.c config.h inner.h fpr.h
+	$(CC) $(CFLAGS) -c -o common.o common.c
+
+falcon.o: falcon.c falcon.h config.h inner.h fpr.h
+	$(CC) $(CFLAGS) -c -o falcon.o falcon.c
+
+fft.o: fft.c config.h inner.h fpr.h
+	$(CC) $(CFLAGS) -c -o fft.o fft.c
+
+fpr.o: fpr.c config.h inner.h fpr.h
+	$(CC) $(CFLAGS) -c -o fpr.o fpr.c
+
+keygen.o: keygen.c config.h inner.h fpr.h
+	$(CC) $(CFLAGS) -c -o keygen.o keygen.c
+
+rng.o: rng.c config.h inner.h fpr.h
+	$(CC) $(CFLAGS) -c -o rng.o rng.c
+
+shake.o: shake.c config.h inner.h fpr.h
+	$(CC) $(CFLAGS) -c -o shake.o shake.c
+
+sign.o: sign.c config.h inner.h fpr.h
+	$(CC) $(CFLAGS) -c -o sign.o sign.c
+
+vrfy.o: vrfy.c config.h inner.h fpr.h
+	$(CC) $(CFLAGS) -c -o vrfy.o vrfy.c
