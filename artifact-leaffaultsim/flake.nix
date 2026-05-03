@@ -23,8 +23,8 @@
 
           src = ./src;
 
-          buildInputs = [
-            pkgs.eigen_3_4_0
+          nativeBuildInputs = with pkgs; [
+            gcc gnumake
           ];
 
           buildPhase = ''
