@@ -18,6 +18,14 @@ The repository is split into four independent but related artifacts:
 
 Each artifact directory has its own `README.md`, `flake.nix`, and `flake.lock`. The root README gives only an overview and installation instructions; the detailed reproduction steps are in the artifact-specific READMEs.
 
+## Supported platform
+
+The artifacts are expected to build and run on Linux. They have primarily been tested on `x86_64-linux` with Nix flakes enabled.
+
+Native macOS builds are **not currently supported**. Some parts of the artifacts assume a GNU/Linux-style toolchain and linker behavior, and the cross-compilation/QEMU setup in the supply-chain artifact is also Linux-oriented. In preliminary tests, adding GCC/G++/GNU binutils through Nix on macOS was not sufficient to make all binaries build and run correctly.
+
+On macOS or other non-Linux hosts, we recommend using a Linux virtual machine and running the artifact commands inside that VM. On Windows, WSL may also work in principle, but this has not been tested by us; a conventional Linux VM is the safer recommendation for artifact review.
+
 ## Repository layout
 
 ```text
@@ -69,7 +77,7 @@ The artifacts are packaged as Nix flakes. Flakes are used through the newer `nix
 
 ### Option A: Determinate Nix Installer
 
-For users who do not already have Nix installed, the simplest route is usually the Determinate Systems installer. It installs Nix with flakes enabled by default and supports Linux and macOS. [Determinate Nix Installer](https://github.com/DeterminateSystems/nix-installer)
+For users who do not already have Nix installed on Linux, the simplest route is usually the Determinate Systems installer. It installs Nix with flakes enabled by default. The installer itself also supports macOS, but these artifacts are only expected to work on Linux; macOS users should install and run Nix inside a Linux VM for artifact review. [Determinate Nix Installer](https://github.com/DeterminateSystems/nix-installer)
 
 ```sh
 curl --proto '=https' --tlsv1.2 -sSf -L \
@@ -123,12 +131,19 @@ followed by a system rebuild. [nix.dev flakes documentation](https://nix.dev/con
 
 Each artifact is self-contained. Enter the corresponding directory and use the commands described in its README.
 
-For example, to build and run the square-root-free Falcon benchmark artifact:
+For example, to build and run the square-root-free Falcon benchmark artifact on Linux:
 
 ```sh
 cd artifact-falcon-nosqrt
 nix build
 nix run
+```
+
+For artifact review, the same commands can be run with `--no-update-lock-file` to ensure that the shipped lock files are not modified:
+
+```sh
+nix build --no-update-lock-file
+nix run --no-update-lock-file
 ```
 
 To inspect the exact package and app names exported by an artifact:
@@ -258,6 +273,7 @@ unless intentionally updating the dependency set.
 
 The usual caveats still apply:
 
+- the artifacts are expected to run on Linux; on macOS or other non-Linux hosts, use a Linux VM;
 - physical fault-injection results depend on the target board, clocking, cabling, and ChipWhisperer model;
 - cross-compilation targets may require building large toolchains if binary substitutes are unavailable;
 - QEMU user-mode behavior depends on the QEMU version pinned by nixpkgs and the host architecture;
