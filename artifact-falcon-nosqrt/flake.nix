@@ -40,9 +40,7 @@
 
             src = falconReferenceImpl;
 
-            nativeBuildInputs = with pkgs; [ 
-              gcc gnumake
-            ];
+            nativeBuildInputs = [ ];
 
             patches = lib.optionals nosqrt [
               ./patches/nosqrt.patch
