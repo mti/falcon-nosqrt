@@ -115,6 +115,7 @@ For reference, a sample output out of the benchmark is provided as `sample_outpu
 ```sh
 nix run 2>&1 | tee sample_output.txt
 ```
+(Those timings are not identical to the ones given in the paper, due e.g. to the different GCC version).
 
 ## Running individual configurations
 
