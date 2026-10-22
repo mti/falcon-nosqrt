@@ -111,6 +111,11 @@ sdc, stc, vvc = corresponding constant-time hash-to-point variants
 
 Key generation is reported in milliseconds; the other values are reported in microseconds, following Falcon's `speed` tool.
 
+For reference, a sample output out of the benchmark is provided as `sample_output.txt`. It is generated with:
+```sh
+nix run 2>&1 | tee sample_output.txt
+```
+
 ## Running individual configurations
 
 The flake also exposes app targets for each binary/configuration pair. The naming convention is:

@@ -10,7 +10,11 @@ The artifact depends on the modified-leaf key-recovery simulator from artifact 2
 artifact-leaffaultsim.url = "path:../artifact-leaffaultsim";
 ```
 
-Therefore this artifact directory should be placed next to `artifact-leaffaultsim`, or the path in `flake.nix` should be adjusted.
+Therefore, the directory containing this artifact should be placed next to the `artifact-falcon-nosqrt` and `artifact-leaffaultsim` directories, preferably in a shared Git repository to support pure evaluation. This is already the case when the set of artifacts is obtained by cloning from Github, but not when downloading a given commit as an archive, e.g. via Zenodo. In the latter case, the issue can be solved by running:
+```sh
+git init && git add -A
+```
+at the root level of the set of artifacts.
 
 ## Repository layout
 
@@ -19,6 +23,7 @@ The artifact is expected to contain at least:
 ```text
 flake.nix
 flake.lock
+sample_output.txt
 src/
   Makefile.supplysim
   supply_test.cpp
@@ -179,6 +184,12 @@ PER_CORE_BATCH_SIZE=20000 \
 nix run
 ```
 
+For reference, a sample output out of the test (run against the native code, on an x86\_64 machine) is provided as `sample_output.txt`. It is generated with:
+```sh
+RUN_LEAFFAULTSIM=1 NUM_KEYS=20 nix run 2>&1 | tee sample_output.txt
+```
+Consistent with the expected behavior on this platform, the `native-default` and `native-nb` variants are not vulnerable, but a significant proportion of the keys (in this example, 12/20) lead to a full key recovery in the `native-ns` variant.
+
 The default runner currently includes only the native smoke-test configurations, so that plain `nix run` does not force expensive cross-toolchain builds. Cross-target configurations should normally be run through their individual apps, as described below.
 
 ## Running individual configurations
@@ -193,7 +204,7 @@ nix run .#native-nb -- key1
 nix run .#native-ns -- key1
 ```
 
-For cross targets, the app automatically wraps the target binary with QEMU user-mode emulation:
+ cross targets, the app automatically wraps the target binary with QEMU user-mode emulation:
 
 ```sh
 nix run .#riscv64-default -- key1
@@ -210,6 +221,7 @@ A typical manual workflow is:
 
 ```sh
 # Generate a key using artifact 2.
+mkdir -p key1
 nix run ../artifact-leaffaultsim#instancegen -- key1
 
 # Run one supply-chain PoC configuration on that key.
@@ -219,8 +231,6 @@ LEAF_VAL=$(nix run .#native-ns -- key1)
 nix run ../artifact-leaffaultsim#leaffaultsim -- key1 "$LEAF_VAL" 3000000 20000
 ```
 
-Depending on how artifact 2 exposes its apps, the exact `instancegen` and `leaffaultsim` app names may need to be adjusted. The default app in this artifact already uses the corresponding binaries from the artifact-2 package directly.
-
 ## Interpreting the configurations
 
 The intended comparison is:
@@ -229,7 +239,7 @@ The intended comparison is:
 - `nb`: what changes when `-fno-builtin-sqrt` is added;
 - `ns`: what changes when Falcon's handwritten architecture-specific square-root path is bypassed and the generic native `sqrt()` path is forced.
 
-For targets such as x86_64, i686, aarch64, powerpc, and powerpc64le, Falcon contains target-specific square-root code. Merely using `-fno-builtin-sqrt` is not enough to force a libm call in those cases, because the Falcon code may avoid `sqrt()` entirely. The `-ns` configuration is therefore used to force the generic native `sqrt()` path.
+For targets such as x86\_64, i686, aarch64, powerpc, and powerpc64le, Falcon contains target-specific square-root code. Merely using `-fno-builtin-sqrt` is not enough to force a libm call in those cases, because the Falcon code may avoid `sqrt()` entirely. The `-ns` configuration is therefore used to force the generic native `sqrt()` path.
 
 For targets without Falcon handwritten square-root code, such as `riscv64` and `loongarch64` in the current matrix, there is no `-ns` configuration. The relevant comparison is between `<target>-default` and `<target>-nb`.
 

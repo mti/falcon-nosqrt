@@ -2,17 +2,26 @@
 
 This artifact contains the code and Nix build glue used to reproduce the physical fault-injection part of the Falcon square-root attack. It builds the target firmware variants, provides a Python/ChipWhisperer environment, and connects the collected faulty outputs to the modified-leaf key-recovery simulator from the second artifact.
 
-The artifact targets a ChipWhisperer Pro / CW1200 setup with a CW308 STM32F4 target board by default. The target platform is set in `flake.nix` as:
+The artifact targets a ChipWhisperer Pro / CW1200 setup with a CW308 STM32F4 target board. The target platform is set in `flake.nix` as:
 
 ```nix
 victimPlatform = "CW308_STM32F4";
 ```
+
+Connecting to the device can be achieved by following the ChipWhisperer Pro instructions [here](https://github.com/newaetech/chipwhisperer-jupyter/blob/dee4ddd71fa534457b97df6880ad4fecbc77bb94/1%20-%20Connecting%20to%20Hardware.ipynb).  Those instructions use an STM32F3 target board on the UFO board, but the same setup applies to the STM32F4 target as well. Due to memory limits on the STM32F3 microcontroller, we recommeded using the STM32F4 target.
 
 The default configuration builds three firmware variants:
 
 - `glitch_falcon2021_cm4asm`: Falcon reference implementation, 2021 code, Cortex-M4 assembly floating-point emulation enabled.
 - `glitch_falcon2021_c`: Falcon reference implementation, 2021 code, C floating-point emulation.
 - `glitch_falcon2025_cm4asm`: newer Cortex-M4 assembly implementation from `c-fn-dsa`.
+
+In addition, firmware variants without glitch triggers are also provided for the 2021 code, in order to compare the compiled STM32F4 binaries with and without square root computations:
+
+- `noglitch_falcon2021_cm4asm`: Falcon reference implementation, 2021 code, Cortex-M4 assembly floating-point emulation enabled.
+- `noglitch_falcon2021_c`: Falcon reference implementation, 2021 code, C floating-point emulation.
+- `noglitch_falcon2021_cm4asm_nosqrt`: Our square root-free variant of the 2021 code, Cortex-M4 assembly floating-point emulation enabled.
+- `noglitch_falcon2021_c_nosqrt`: Our square root free variant of the 2021 code, C floating-point emulation.
 
 The flake also provides a development shell with ChipWhisperer, Jupyter, and the Python dependencies needed by the scripts.
 
@@ -27,19 +36,25 @@ chipwhisperer.nix
 firmware/
   falconimpl_2021/
   falconimpl_cm4_2025/
+  falconimpl_noglitch_2021/
 scripts/
   chipw.py
   full_chain.py
   run_attack.py
 ```
 
-This flake depends on the second artifact through:
+This flake depends on two other artifacts through:
 
 ```nix
 artifact-leaffaultsim.url = "path:../artifact-leaffaultsim";
+artifact-falcon-nosqrt.url = "path:../artifact-falcon-nosqrt";
 ```
 
-Therefore, the directory containing this artifact should be placed next to the `artifact-leaffaultsim` directory, or the path in `flake.nix` should be adjusted accordingly.
+Therefore, the directory containing this artifact should be placed next to the `artifact-falcon-nosqrt` and `artifact-leaffaultsim` directories, preferably in a shared Git repository to support pure evaluation. This is already the case when the set of artifacts is obtained by cloning from Github, but not when downloading a given commit as an archive, e.g. via Zenodo. In the latter case, the issue can be solved by running:
+```sh
+git init && git add -A
+```
+at the root level of the set of artifacts.
 
 ## Building the target firmware
 
@@ -56,10 +71,10 @@ result/bin/
 ```
 
 For example, the `.hex` file has a name of the form:
-
 ```text
 glitch_fndsa-CW308_STM32F4.hex
 ```
+(or `noglitch_fndsa-CW308_STM32F4.hex` in the case of one of the noglitch variants).
 
 To build a specific firmware variant:
 
@@ -67,6 +82,15 @@ To build a specific firmware variant:
 nix build .#glitch_falcon2021_cm4asm
 nix build .#glitch_falcon2021_c
 nix build .#glitch_falcon2025_cm4asm
+nix build .#noglitch_falcon2021_cm4asm
+nix build .#noglitch_falcon2021_c
+nix build .#noglitch_falcon2021_cm4asm_nosqrt
+nix build .#noglitch_falcon2021_c_nosqrt
+```
+
+This makes it possible, for example, to inspect the byte size of the compiled binaries by running:
+```sh
+du -b result/bin/*glitch_fndsa-CW308_STM32F4.{bin,hex}
 ```
 
 The patched/build source files for the firmware are installed under:

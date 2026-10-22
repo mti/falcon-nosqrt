@@ -77,6 +77,12 @@ NUM_KEYS=20 LEAF_VAL=0 MAX_SIGS=5000000 PER_CORE_BATCH_SIZE=20000 nix run
 
 The script creates directories named `key1`, `key2`, and so on in the current working directory.  Existing key directories are reused, which makes it possible to resume or repeat experiments on the same keys.
 
+For reference, a sample output out of the test (with 10 keys and leaf value 0.55) is provided as `sample_output.txt`. It is generated with:
+```sh
+NUM_KEYS=10 PER_CORE_BATCH_SIZE=20000 nix run 2>&1 | tee sample_output.txt
+```
+All 10 keys are recovered successfully as expected.
+
 ## Flake outputs
 
 The flake provides the following package outputs:
@@ -91,6 +97,7 @@ and the following app outputs:
 ```text
 apps.<system>.default
 apps.<system>.leaffaultsim
+apps.<system>.instancegen
 ```
 
 Thus the most common commands are:

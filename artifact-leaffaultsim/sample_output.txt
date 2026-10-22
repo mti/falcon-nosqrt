@@ -1,0 +1,244 @@
+warning: Git tree '/home/medtib/maths/these/falconsqrt/artifacts-repo/falcon-nosqrt' is dirty
+Simulation of the key recovery attack against Falcon with a faulty leaf
+-----------------------------------------------------------------------
+* Keys to attack: key1 up to key10
+  (existing key files will be used if they exist; otherwise, they are
+   freshly generated);
+* Injected leaf value: 0.55;
+* Maximum number of signature samples: 3000000;
+* Number of signatures processed at once on each core: 20000
+
+=== Attacking key1 ===
+Create new key in private key file key1/privkey.
+Inserting leaf fault: 0.767487 -> 0.55
+Eigenspace attack with dim. 1 on 3000016 faulty Falcon-512 signatures with batch size 20000
+Fault type: incorrect leftmost square root
+
+Correlations after 320000 signatures: 0.99835
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+Correlations after 640000 signatures: 0.999142
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+Correlations after 960000 signatures: 0.999453
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] SUCCESS with pair (124,237)
+[recovery] z = (-22.8916,125.136)  |z|=127.212
+[recovery] ||s||^2 = 16180  dist_to_line = 4.20493
+** Full key recovery achieved (and fault is within NIST bound)! **
+
+=== Attacking key2 ===
+Create new key in private key file key2/privkey.
+Inserting leaf fault: 0.77471 -> 0.55
+Eigenspace attack with dim. 1 on 3000016 faulty Falcon-512 signatures with batch size 20000
+Fault type: incorrect leftmost square root
+
+Correlations after 320000 signatures: 0.998267
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+Correlations after 640000 signatures: 0.9992
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] SUCCESS with pair (45,50)
+[recovery] z = (-114.796,55.5421)  |z|=127.526
+[recovery] ||s||^2 = 16486  dist_to_line = 5.13329
+** Full key recovery achieved (and fault is within NIST bound)! **
+
+=== Attacking key3 ===
+Create new key in private key file key3/privkey.
+Inserting leaf fault: 0.781168 -> 0.55
+Eigenspace attack with dim. 1 on 3000016 faulty Falcon-512 signatures with batch size 20000
+Fault type: incorrect leftmost square root
+
+Correlations after 320000 signatures: 0.998343
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+Correlations after 640000 signatures: 0.999247
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] SUCCESS with pair (226,164)
+[recovery] z = (96.7096,85.0537)  |z|=128.79
+[recovery] ||s||^2 = 16762  dist_to_line = 5.02473
+** Full key recovery achieved (and fault is within NIST bound)! **
+
+=== Attacking key4 ===
+Create new key in private key file key4/privkey.
+Inserting leaf fault: 0.768577 -> 0.55
+Eigenspace attack with dim. 1 on 3000016 faulty Falcon-512 signatures with batch size 20000
+Fault type: incorrect leftmost square root
+
+Correlations after 320000 signatures: 0.998278
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+Correlations after 640000 signatures: 0.99914
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+Correlations after 960000 signatures: 0.999451
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] SUCCESS with pair (212,239)
+[recovery] z = (-39.9672,-120.452)  |z|=126.91
+[recovery] ||s||^2 = 16226  dist_to_line = 4.22151
+** Full key recovery achieved (and fault is within NIST bound)! **
+
+=== Attacking key5 ===
+Create new key in private key file key5/privkey.
+Inserting leaf fault: 0.780095 -> 0.55
+Eigenspace attack with dim. 1 on 3000016 faulty Falcon-512 signatures with batch size 20000
+Fault type: incorrect leftmost square root
+
+Correlations after 320000 signatures: 0.998466
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+Correlations after 640000 signatures: 0.999227
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+Correlations after 960000 signatures: 0.999498
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] SUCCESS with pair (186,233)
+[recovery] z = (-66.8748,-109.714)  |z|=128.489
+[recovery] ||s||^2 = 16716  dist_to_line = 4.0966
+** Full key recovery achieved (and fault is within NIST bound)! **
+
+=== Attacking key6 ===
+Create new key in private key file key6/privkey.
+Inserting leaf fault: 0.771461 -> 0.55
+Eigenspace attack with dim. 1 on 3000016 faulty Falcon-512 signatures with batch size 20000
+Fault type: incorrect leftmost square root
+
+Correlations after 320000 signatures: 0.998291
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+Correlations after 640000 signatures: 0.999174
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+Correlations after 960000 signatures: 0.999466
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] SUCCESS with pair (234,435)
+[recovery] z = (-124.725,30.5446)  |z|=128.411
+[recovery] ||s||^2 = 16348  dist_to_line = 4.17739
+** Full key recovery achieved (and fault is within NIST bound)! **
+
+=== Attacking key7 ===
+Create new key in private key file key7/privkey.
+Inserting leaf fault: 0.779208 -> 0.55
+Eigenspace attack with dim. 1 on 3000016 faulty Falcon-512 signatures with batch size 20000
+Fault type: incorrect leftmost square root
+
+Correlations after 320000 signatures: 0.998481
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+Correlations after 640000 signatures: 0.999246
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] SUCCESS with pair (358,41)
+[recovery] z = (-129.876,-2.50727)  |z|=129.901
+[recovery] ||s||^2 = 16678  dist_to_line = 5.01548
+** Full key recovery achieved (and fault is within NIST bound)! **
+
+=== Attacking key8 ===
+Create new key in private key file key8/privkey.
+Inserting leaf fault: 0.766395 -> 0.55
+Eigenspace attack with dim. 1 on 3000016 faulty Falcon-512 signatures with batch size 20000
+Fault type: incorrect leftmost square root
+
+Correlations after 320000 signatures: 0.998195
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+Correlations after 640000 signatures: 0.99915
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+Correlations after 960000 signatures: 0.999435
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] SUCCESS with pair (210,381)
+[recovery] z = (114.91,52.1544)  |z|=126.192
+[recovery] ||s||^2 = 16134  dist_to_line = 4.26874
+** Full key recovery achieved (and fault is within NIST bound)! **
+
+=== Attacking key9 ===
+Create new key in private key file key9/privkey.
+Inserting leaf fault: 0.770705 -> 0.55
+Eigenspace attack with dim. 1 on 3000016 faulty Falcon-512 signatures with batch size 20000
+Fault type: incorrect leftmost square root
+
+Correlations after 320000 signatures: 0.998333
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+Correlations after 640000 signatures: 0.999126
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] SUCCESS with pair (157,286)
+[recovery] z = (-81.9673,98.3884)  |z|=128.058
+[recovery] ||s||^2 = 16316  dist_to_line = 5.33857
+** Full key recovery achieved (and fault is within NIST bound)! **
+
+=== Attacking key10 ===
+Create new key in private key file key10/privkey.
+Inserting leaf fault: 0.765682 -> 0.55
+Eigenspace attack with dim. 1 on 3000016 faulty Falcon-512 signatures with batch size 20000
+Fault type: incorrect leftmost square root
+
+Correlations after 320000 signatures: 0.998345
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+Correlations after 640000 signatures: 0.999163
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+Correlations after 960000 signatures: 0.999403
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+Correlations after 1280000 signatures: 0.99954
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] SUCCESS with pair (293,81)
+[recovery] z = (-113.252,-56.779)  |z|=126.688
+[recovery] ||s||^2 = 16104  dist_to_line = 3.84852
+** Full key recovery achieved (and fault is within NIST bound)! **

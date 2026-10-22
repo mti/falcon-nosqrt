@@ -1,0 +1,635 @@
+Falcon sqrt supply-chain/dependency PoC
+---------------------------------------
+* Keys to generate: key1 up to key20
+* Configurations: native-default native-nb native-ns
+* Run leaffaultsim key recovery: 1
+* Maximum number of signature samples, if enabled: 3000000
+* Signatures processed per core batch, if enabled: 20000
+
+=== Generating key1 ===
+Create new key in private key file key1/privkey.
+
+--- native-default on key1 ---
+Private key file key1/privkey exists: reading privkey.
+No leaf error detected.
+
+--- native-nb on key1 ---
+Private key file key1/privkey exists: reading privkey.
+No leaf error detected.
+
+--- native-ns on key1 ---
+Private key file key1/privkey exists: reading privkey.
+Erroneous leaf found! Key likely recoverable with leaffaultsim.
+modified leaf value: 0.576257
+Private key file key1/privkey exists: reading privkey.
+Inserting leaf fault: 0.769334 -> 0.576257
+Eigenspace attack with dim. 1 on 3000016 faulty Falcon-512 signatures with batch size 20000
+Fault type: incorrect leftmost square root
+
+Correlations after 320000 signatures: 0.997787
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+Correlations after 640000 signatures: 0.998875
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+Correlations after 960000 signatures: 0.99925
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+Correlations after 1280000 signatures: 0.999396
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] SUCCESS with pair (434,138)
+[recovery] z = (34.0236,-122.292)  |z|=126.937
+[recovery] ||s||^2 = 16258  dist_to_line = 4.42982
+** Full key recovery achieved (and fault is within NIST bound)! **
+
+=== Generating key2 ===
+Create new key in private key file key2/privkey.
+
+--- native-default on key2 ---
+Private key file key2/privkey exists: reading privkey.
+No leaf error detected.
+
+--- native-nb on key2 ---
+Private key file key2/privkey exists: reading privkey.
+No leaf error detected.
+
+--- native-ns on key2 ---
+Private key file key2/privkey exists: reading privkey.
+No leaf error detected.
+
+=== Generating key3 ===
+Create new key in private key file key3/privkey.
+
+--- native-default on key3 ---
+Private key file key3/privkey exists: reading privkey.
+No leaf error detected.
+
+--- native-nb on key3 ---
+Private key file key3/privkey exists: reading privkey.
+No leaf error detected.
+
+--- native-ns on key3 ---
+Private key file key3/privkey exists: reading privkey.
+Erroneous leaf found! Key likely recoverable with leaffaultsim.
+modified leaf value: 0.577155
+Private key file key3/privkey exists: reading privkey.
+Inserting leaf fault: 0.770233 -> 0.577155
+Eigenspace attack with dim. 1 on 3000016 faulty Falcon-512 signatures with batch size 20000
+Fault type: incorrect leftmost square root
+
+Correlations after 320000 signatures: 0.997811
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+Correlations after 640000 signatures: 0.998877
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+Correlations after 960000 signatures: 0.999225
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+Correlations after 1280000 signatures: 0.999369
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] SUCCESS with pair (294,387)
+[recovery] z = (122.912,-30.9818)  |z|=126.757
+[recovery] ||s||^2 = 16296  dist_to_line = 4.53422
+** Full key recovery achieved (and fault is within NIST bound)! **
+
+=== Generating key4 ===
+Create new key in private key file key4/privkey.
+
+--- native-default on key4 ---
+Private key file key4/privkey exists: reading privkey.
+No leaf error detected.
+
+--- native-nb on key4 ---
+Private key file key4/privkey exists: reading privkey.
+No leaf error detected.
+
+--- native-ns on key4 ---
+Private key file key4/privkey exists: reading privkey.
+Erroneous leaf found! Key likely recoverable with leaffaultsim.
+modified leaf value: 0.569365
+Private key file key4/privkey exists: reading privkey.
+Inserting leaf fault: 0.762442 -> 0.569365
+Eigenspace attack with dim. 1 on 3000016 faulty Falcon-512 signatures with batch size 20000
+Fault type: incorrect leftmost square root
+
+Correlations after 320000 signatures: 0.99776
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+Correlations after 640000 signatures: 0.998896
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+Correlations after 960000 signatures: 0.999261
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] SUCCESS with pair (284,423)
+[recovery] z = (-113.087,56.0789)  |z|=126.228
+[recovery] ||s||^2 = 15968  dist_to_line = 4.85587
+** Full key recovery achieved (and fault is within NIST bound)! **
+
+=== Generating key5 ===
+Create new key in private key file key5/privkey.
+
+--- native-default on key5 ---
+Private key file key5/privkey exists: reading privkey.
+No leaf error detected.
+
+--- native-nb on key5 ---
+Private key file key5/privkey exists: reading privkey.
+No leaf error detected.
+
+--- native-ns on key5 ---
+Private key file key5/privkey exists: reading privkey.
+No leaf error detected.
+
+=== Generating key6 ===
+Create new key in private key file key6/privkey.
+
+--- native-default on key6 ---
+Private key file key6/privkey exists: reading privkey.
+No leaf error detected.
+
+--- native-nb on key6 ---
+Private key file key6/privkey exists: reading privkey.
+No leaf error detected.
+
+--- native-ns on key6 ---
+Private key file key6/privkey exists: reading privkey.
+Erroneous leaf found! Key likely recoverable with leaffaultsim.
+modified leaf value: 0.568696
+Private key file key6/privkey exists: reading privkey.
+Inserting leaf fault: 0.761773 -> 0.568696
+Eigenspace attack with dim. 1 on 3000016 faulty Falcon-512 signatures with batch size 20000
+Fault type: incorrect leftmost square root
+
+Correlations after 320000 signatures: 0.99774
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+Correlations after 640000 signatures: 0.998882
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+Correlations after 960000 signatures: 0.999246
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+Correlations after 1280000 signatures: 0.99942
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] SUCCESS with pair (9,316)
+[recovery] z = (84.6097,94.1656)  |z|=126.594
+[recovery] ||s||^2 = 15940  dist_to_line = 4.2995
+** Full key recovery achieved (and fault is within NIST bound)! **
+
+=== Generating key7 ===
+Create new key in private key file key7/privkey.
+
+--- native-default on key7 ---
+Private key file key7/privkey exists: reading privkey.
+No leaf error detected.
+
+--- native-nb on key7 ---
+Private key file key7/privkey exists: reading privkey.
+No leaf error detected.
+
+--- native-ns on key7 ---
+Private key file key7/privkey exists: reading privkey.
+Erroneous leaf found! Key likely recoverable with leaffaultsim.
+modified leaf value: 0.57777
+Private key file key7/privkey exists: reading privkey.
+Inserting leaf fault: 0.770847 -> 0.57777
+Eigenspace attack with dim. 1 on 3000016 faulty Falcon-512 signatures with batch size 20000
+Fault type: incorrect leftmost square root
+
+Correlations after 320000 signatures: 0.997633
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+Correlations after 640000 signatures: 0.998806
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+Correlations after 960000 signatures: 0.999236
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] SUCCESS with pair (264,322)
+[recovery] z = (127.299,-3.21408)  |z|=127.339
+[recovery] ||s||^2 = 16322  dist_to_line = 4.99208
+** Full key recovery achieved (and fault is within NIST bound)! **
+
+=== Generating key8 ===
+Create new key in private key file key8/privkey.
+
+--- native-default on key8 ---
+Private key file key8/privkey exists: reading privkey.
+No leaf error detected.
+
+--- native-nb on key8 ---
+Private key file key8/privkey exists: reading privkey.
+No leaf error detected.
+
+--- native-ns on key8 ---
+Private key file key8/privkey exists: reading privkey.
+Erroneous leaf found! Key likely recoverable with leaffaultsim.
+modified leaf value: 0.569412
+Private key file key8/privkey exists: reading privkey.
+Inserting leaf fault: 0.76249 -> 0.569412
+Eigenspace attack with dim. 1 on 3000016 faulty Falcon-512 signatures with batch size 20000
+Fault type: incorrect leftmost square root
+
+Correlations after 320000 signatures: 0.997768
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+Correlations after 640000 signatures: 0.998948
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+Correlations after 960000 signatures: 0.999289
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+Correlations after 1280000 signatures: 0.999457
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] SUCCESS with pair (322,219)
+[recovery] z = (125.164,-17.7952)  |z|=126.423
+[recovery] ||s||^2 = 15970  dist_to_line = 4.16492
+** Full key recovery achieved (and fault is within NIST bound)! **
+
+=== Generating key9 ===
+Create new key in private key file key9/privkey.
+
+--- native-default on key9 ---
+Private key file key9/privkey exists: reading privkey.
+No leaf error detected.
+
+--- native-nb on key9 ---
+Private key file key9/privkey exists: reading privkey.
+No leaf error detected.
+
+--- native-ns on key9 ---
+Private key file key9/privkey exists: reading privkey.
+Erroneous leaf found! Key likely recoverable with leaffaultsim.
+modified leaf value: 0.57602
+Private key file key9/privkey exists: reading privkey.
+Inserting leaf fault: 0.769098 -> 0.57602
+Eigenspace attack with dim. 1 on 3000016 faulty Falcon-512 signatures with batch size 20000
+Fault type: incorrect leftmost square root
+
+Correlations after 320000 signatures: 0.997754
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+Correlations after 640000 signatures: 0.998907
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+Correlations after 960000 signatures: 0.999243
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] SUCCESS with pair (180,423)
+[recovery] z = (-92.7009,87.5027)  |z|=127.476
+[recovery] ||s||^2 = 16248  dist_to_line = 4.95763
+** Full key recovery achieved (and fault is within NIST bound)! **
+
+=== Generating key10 ===
+Create new key in private key file key10/privkey.
+
+--- native-default on key10 ---
+Private key file key10/privkey exists: reading privkey.
+No leaf error detected.
+
+--- native-nb on key10 ---
+Private key file key10/privkey exists: reading privkey.
+No leaf error detected.
+
+--- native-ns on key10 ---
+Private key file key10/privkey exists: reading privkey.
+No leaf error detected.
+
+=== Generating key11 ===
+Create new key in private key file key11/privkey.
+
+--- native-default on key11 ---
+Private key file key11/privkey exists: reading privkey.
+No leaf error detected.
+
+--- native-nb on key11 ---
+Private key file key11/privkey exists: reading privkey.
+No leaf error detected.
+
+--- native-ns on key11 ---
+Private key file key11/privkey exists: reading privkey.
+Erroneous leaf found! Key likely recoverable with leaffaultsim.
+modified leaf value: 0.575215
+Private key file key11/privkey exists: reading privkey.
+Inserting leaf fault: 0.768293 -> 0.575215
+Eigenspace attack with dim. 1 on 3000016 faulty Falcon-512 signatures with batch size 20000
+Fault type: incorrect leftmost square root
+
+Correlations after 320000 signatures: 0.997448
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+Correlations after 640000 signatures: 0.998782
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+Correlations after 960000 signatures: 0.999189
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+Correlations after 1280000 signatures: 0.999413
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] SUCCESS with pair (465,197)
+[recovery] z = (-127.962,9.52425)  |z|=128.316
+[recovery] ||s||^2 = 16214  dist_to_line = 4.36276
+** Full key recovery achieved (and fault is within NIST bound)! **
+
+=== Generating key12 ===
+Create new key in private key file key12/privkey.
+
+--- native-default on key12 ---
+Private key file key12/privkey exists: reading privkey.
+No leaf error detected.
+
+--- native-nb on key12 ---
+Private key file key12/privkey exists: reading privkey.
+No leaf error detected.
+
+--- native-ns on key12 ---
+Private key file key12/privkey exists: reading privkey.
+No leaf error detected.
+
+=== Generating key13 ===
+Create new key in private key file key13/privkey.
+
+--- native-default on key13 ---
+Private key file key13/privkey exists: reading privkey.
+No leaf error detected.
+
+--- native-nb on key13 ---
+Private key file key13/privkey exists: reading privkey.
+No leaf error detected.
+
+--- native-ns on key13 ---
+Private key file key13/privkey exists: reading privkey.
+No leaf error detected.
+
+=== Generating key14 ===
+Create new key in private key file key14/privkey.
+
+--- native-default on key14 ---
+Private key file key14/privkey exists: reading privkey.
+No leaf error detected.
+
+--- native-nb on key14 ---
+Private key file key14/privkey exists: reading privkey.
+No leaf error detected.
+
+--- native-ns on key14 ---
+Private key file key14/privkey exists: reading privkey.
+No leaf error detected.
+
+=== Generating key15 ===
+Create new key in private key file key15/privkey.
+
+--- native-default on key15 ---
+Private key file key15/privkey exists: reading privkey.
+No leaf error detected.
+
+--- native-nb on key15 ---
+Private key file key15/privkey exists: reading privkey.
+No leaf error detected.
+
+--- native-ns on key15 ---
+Private key file key15/privkey exists: reading privkey.
+Erroneous leaf found! Key likely recoverable with leaffaultsim.
+modified leaf value: 0.571605
+Private key file key15/privkey exists: reading privkey.
+Inserting leaf fault: 0.764683 -> 0.571605
+Eigenspace attack with dim. 1 on 3000016 faulty Falcon-512 signatures with batch size 20000
+Fault type: incorrect leftmost square root
+
+Correlations after 320000 signatures: 0.997753
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+Correlations after 640000 signatures: 0.998831
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+Correlations after 960000 signatures: 0.999234
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+Correlations after 1280000 signatures: 0.999431
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] SUCCESS with pair (501,216)
+[recovery] z = (109.019,65.5931)  |z|=127.231
+[recovery] ||s||^2 = 16062  dist_to_line = 4.2753
+** Full key recovery achieved (and fault is within NIST bound)! **
+
+=== Generating key16 ===
+Create new key in private key file key16/privkey.
+
+--- native-default on key16 ---
+Private key file key16/privkey exists: reading privkey.
+No leaf error detected.
+
+--- native-nb on key16 ---
+Private key file key16/privkey exists: reading privkey.
+No leaf error detected.
+
+--- native-ns on key16 ---
+Private key file key16/privkey exists: reading privkey.
+No leaf error detected.
+
+=== Generating key17 ===
+Create new key in private key file key17/privkey.
+
+--- native-default on key17 ---
+Private key file key17/privkey exists: reading privkey.
+No leaf error detected.
+
+--- native-nb on key17 ---
+Private key file key17/privkey exists: reading privkey.
+No leaf error detected.
+
+--- native-ns on key17 ---
+Private key file key17/privkey exists: reading privkey.
+Erroneous leaf found! Key likely recoverable with leaffaultsim.
+modified leaf value: 0.576446
+Private key file key17/privkey exists: reading privkey.
+Inserting leaf fault: 0.769524 -> 0.576446
+Eigenspace attack with dim. 1 on 3000016 faulty Falcon-512 signatures with batch size 20000
+Fault type: incorrect leftmost square root
+
+Correlations after 320000 signatures: 0.99759
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+Correlations after 640000 signatures: 0.998787
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+Correlations after 960000 signatures: 0.999228
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+Correlations after 1280000 signatures: 0.999417
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] SUCCESS with pair (467,384)
+[recovery] z = (-126.697,-8.44073)  |z|=126.978
+[recovery] ||s||^2 = 16266  dist_to_line = 4.3535
+** Full key recovery achieved (and fault is within NIST bound)! **
+
+=== Generating key18 ===
+Create new key in private key file key18/privkey.
+
+--- native-default on key18 ---
+Private key file key18/privkey exists: reading privkey.
+No leaf error detected.
+
+--- native-nb on key18 ---
+Private key file key18/privkey exists: reading privkey.
+No leaf error detected.
+
+--- native-ns on key18 ---
+Private key file key18/privkey exists: reading privkey.
+No leaf error detected.
+
+=== Generating key19 ===
+Create new key in private key file key19/privkey.
+
+--- native-default on key19 ---
+Private key file key19/privkey exists: reading privkey.
+No leaf error detected.
+
+--- native-nb on key19 ---
+Private key file key19/privkey exists: reading privkey.
+No leaf error detected.
+
+--- native-ns on key19 ---
+Private key file key19/privkey exists: reading privkey.
+Erroneous leaf found! Key likely recoverable with leaffaultsim.
+modified leaf value: 0.575215
+Private key file key19/privkey exists: reading privkey.
+Inserting leaf fault: 0.768293 -> 0.575215
+Eigenspace attack with dim. 1 on 3000016 faulty Falcon-512 signatures with batch size 20000
+Fault type: incorrect leftmost square root
+
+Correlations after 320000 signatures: 0.997477
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+Correlations after 640000 signatures: 0.998829
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+Correlations after 960000 signatures: 0.999199
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+Correlations after 1280000 signatures: 0.999434
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] SUCCESS with pair (372,319)
+[recovery] z = (3.7961,-125.734)  |z|=125.791
+[recovery] ||s||^2 = 16214  dist_to_line = 4.28329
+** Full key recovery achieved (and fault is within NIST bound)! **
+
+=== Generating key20 ===
+Create new key in private key file key20/privkey.
+
+--- native-default on key20 ---
+Private key file key20/privkey exists: reading privkey.
+No leaf error detected.
+
+--- native-nb on key20 ---
+Private key file key20/privkey exists: reading privkey.
+No leaf error detected.
+
+--- native-ns on key20 ---
+Private key file key20/privkey exists: reading privkey.
+Erroneous leaf found! Key likely recoverable with leaffaultsim.
+modified leaf value: 0.575547
+Private key file key20/privkey exists: reading privkey.
+Inserting leaf fault: 0.768624 -> 0.575547
+Eigenspace attack with dim. 1 on 3000016 faulty Falcon-512 signatures with batch size 20000
+Fault type: incorrect leftmost square root
+
+Correlations after 320000 signatures: 0.997489
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+Correlations after 640000 signatures: 0.998821
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+Correlations after 960000 signatures: 0.999204
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] failed so far.
+[recovery] try for |z| in [94.8558, 145.701]...
+[recovery] SUCCESS with pair (45,313)
+[recovery] z = (50.9496,115.597)  |z|=126.327
+[recovery] ||s||^2 = 16228  dist_to_line = 5.08247
+** Full key recovery achieved (and fault is within NIST bound)! **

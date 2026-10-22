@@ -1,0 +1,40 @@
+kg = keygen, ek = expand private key, sd = sign (without expanded key)
+st = sign (with expanded key), vv = verify
+sdc, stc, vvc: like sd, st and vv, but with constant-time hash-to-point
+keygen in milliseconds, other values in microseconds
+
+=== baseline-fpemu ===
+degree  kg(ms)   ek(us)   sd(us)  sdc(us)   st(us)  stc(us)   vv(us)  vvc(us)
+ 256:     5.92   756.12  1836.32  1833.14   837.81   851.34    12.46    23.65
+ 512:    13.85  1683.66  4063.78  4090.09  1822.52  1852.61    26.55    45.20
+1024:    43.46  3662.68  8792.22  8781.30  3861.57  3899.30    61.74    89.57
+
+=== nosqrt-fpemu ===
+degree  kg(ms)   ek(us)   sd(us)  sdc(us)   st(us)  stc(us)   vv(us)  vvc(us)
+ 256:     5.97   724.60  1804.37  1804.54   842.73   841.66    12.37    23.82
+ 512:    14.90  1623.47  4038.87  4055.17  1813.32  1857.10    26.83    43.84
+1024:    41.13  3621.24  8816.42  8771.79  3877.24  3933.86    60.47    88.98
+
+=== baseline-fpnative ===
+degree  kg(ms)   ek(us)   sd(us)  sdc(us)   st(us)  stc(us)   vv(us)  vvc(us)
+ 256:     3.08    43.10   144.18   153.67    87.84    99.08    12.56    24.24
+ 512:     6.74    90.29   290.80   302.58   175.44   189.00    27.26    43.87
+1024:    19.53   183.51   576.67   613.07   343.61   371.45    60.19    87.79
+
+=== nosqrt-fpnative ===
+degree  kg(ms)   ek(us)   sd(us)  sdc(us)   st(us)  stc(us)   vv(us)  vvc(us)
+ 256:     3.04    42.76   146.30   156.61    92.62   102.31    12.65    24.46
+ 512:     6.49    89.43   295.10   316.41   185.90   198.69    26.93    43.98
+1024:    18.70   185.90   594.42   625.06   365.19   392.81    61.65    90.24
+
+=== baseline-avx2 ===
+degree  kg(ms)   ek(us)   sd(us)  sdc(us)   st(us)  stc(us)   vv(us)  vvc(us)
+ 256:     3.29    41.31   115.03   122.55    61.41    71.67    13.09    25.03
+ 512:     7.23    84.26   230.02   240.42   118.75   132.18    26.31    44.46
+1024:    19.93   174.83   466.65   496.03   240.52   267.42    58.97    88.63
+
+=== nosqrt-avx2 ===
+degree  kg(ms)   ek(us)   sd(us)  sdc(us)   st(us)  stc(us)   vv(us)  vvc(us)
+ 256:     3.32    41.09   114.97   124.51    64.58    74.55    12.52    23.95
+ 512:     6.93    84.90   232.17   244.50   127.47   139.68    26.37    43.10
+1024:    19.62   174.34   477.44   499.38   254.12   278.09    60.12    87.25
