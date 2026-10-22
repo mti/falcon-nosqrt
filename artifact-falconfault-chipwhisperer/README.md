@@ -30,7 +30,7 @@ firmware/
 scripts/
   chipw.py
   full_chain.py
-  server_side_attack.py
+  run_attack.py
 ```
 
 This flake depends on the second artifact through:

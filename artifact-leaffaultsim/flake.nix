@@ -97,6 +97,11 @@
             type = "app";
             program = "${leaffaultsim}/bin/leaffaultsim";
           };
+
+          instancegen = {
+            type = "app";
+            program = "${leaffaultsim}/bin/instancegen";
+          };
         };
       });
 }

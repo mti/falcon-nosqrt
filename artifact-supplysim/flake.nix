@@ -268,8 +268,6 @@
                   else
                     echo "key recovery skipped; set RUN_LEAFFAULTSIM=1 to enable it"
                   fi
-                else
-                  echo "supply_test failed for configuration $cfg" >&2
                 fi
               done
             done

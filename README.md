@@ -18,6 +18,12 @@ The repository is split into four independent but related artifacts:
 
 Each artifact directory has its own `README.md`, `flake.nix`, and `flake.lock`. The root README gives only an overview and installation instructions; the detailed reproduction steps are in the artifact-specific READMEs.
 
+**Important note when downloading the artifacts via Zenodo:** the `artifact-supplysim/` and `artifact-falconfault-chipwhisperer/` artifacts reference the other ones by path. This is unsupported by Nix in pure evaluation mode when the files are not tracked by Git, which happens when this set of artifacts is obtained as an archive (e.g., downloaded on Zenodo) instead of being cloned from Github. The simplest way to fix the issue is to create a Git repository structure if it doesn't exist by running the following command at the root level:
+```sh
+git init -m main && git add -A
+```
+(One can also force Nix impure evaluation using the `--impure` flag, but this is not recommended).
+
 ## Supported platform
 
 The artifacts are expected to build and run on Linux. They have primarily been tested on `x86_64-linux` with Nix flakes enabled.

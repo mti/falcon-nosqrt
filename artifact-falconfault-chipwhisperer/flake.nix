@@ -5,9 +5,10 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
     flake-utils.url = "github:numtide/flake-utils";
     artifact-leaffaultsim.url = "path:../artifact-leaffaultsim";
+    artifact-falcon-nosqrt.url = "path:../artifact-falcon-nosqrt";
   };
 
-  outputs = { self, nixpkgs, flake-utils, artifact-leaffaultsim }:
+  outputs = { self, nixpkgs, flake-utils, artifact-leaffaultsim, artifact-falcon-nosqrt }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs { inherit system; };
@@ -25,10 +26,14 @@
           sha256 = "sha256-jdXOCo6AHEQrpyDYaz/lapNU3qEBZuGXGJCZ0FoIcqc=";
         };
 
+        falconNosqrtPkg = artifact-falcon-nosqrt.packages.${system}.nosqrt-fpemu;
+        falconNosqrtImpl = "${falconNosqrtPkg}/share/falcon-artifact/source";
+
         chipwhisperer = pkgs.callPackage ./chipwhisperer.nix {};
 
         victimPlatform = "CW308_STM32F4";
         firmwareFile = "glitch_fndsa-${victimPlatform}";
+        firmwareFileNoglitch = "noglitch_fndsa-${victimPlatform}";
 
         firmwareConfigs = [
           { 
@@ -48,6 +53,33 @@
             src = ./firmware/falconimpl_cm4_2025;
             falcon = falconNewAsmImpl;
             makeOpts = "";
+          }
+        ];
+
+        firmwareNoglitchConfigs = [
+          { 
+            name = "falcon2021_cm4asm";
+            src = ./firmware/falconimpl_noglitch_2021;
+            falcon = falconReferenceImpl;
+            makeOpts = "ENABLE_CM4_ASM=1 NOSQRT=";
+          }
+          { 
+            name = "falcon2021_c";
+            src = ./firmware/falconimpl_noglitch_2021;
+            falcon = falconReferenceImpl;
+            makeOpts = "ENABLE_CM4_ASM=0 NOSQRT=";
+          }
+          { 
+            name = "falcon2021_cm4asm_nosqrt";
+            src = ./firmware/falconimpl_noglitch_2021;
+            falcon = falconNosqrtImpl;
+            makeOpts = "ENABLE_CM4_ASM=1 NOSQRT=-DNOSQRT";
+          }
+          { 
+            name = "falcon2021_c_nosqrt";
+            src = ./firmware/falconimpl_noglitch_2021;
+            falcon = falconNosqrtImpl;
+            makeOpts = "ENABLE_CM4_ASM=0 NOSQRT=-DNOSQRT";
           }
         ];
 
@@ -88,11 +120,52 @@
             '';
           };
 
+        mkFalconNoglitchFirmware = cfg:
+          pkgs.stdenv.mkDerivation {
+            pname = "noglitch_${cfg.name}";
+            version = "ccs2026artifact";
+
+            src = cfg.src;
+
+            nativeBuildInputs = [
+              pkgs.gcc-arm-embedded
+            ];
+
+            buildPhase = ''
+              runHook preBuild
+
+              cp -r ${cfg.falcon}/* .
+              for file in *.s; do mv -- "$file" "''${file/%s/S}"; done
+              make -f Makefile.noglitch \
+                FIRMWAREPATH=${chipwhisperer}/firmware/mcu \
+                PLATFORM=${victimPlatform} ${cfg.makeOpts}
+
+              runHook postBuild
+            '';
+
+            installPhase = ''
+              runHook preInstall
+
+              mkdir -p $out/bin $out/share/falcon-artifact/source
+
+              shopt -s nullglob
+              cp ${firmwareFileNoglitch}.* $out/bin
+              cp *.c *.s *.S *.h Makefile* $out/share/falcon-artifact/source
+              shopt -u nullglob
+
+              runHook postInstall
+            '';
+          };
+
         firmwarePackageList = 
-          map (cfg: {
+          (map (cfg: {
             name = "glitch_${cfg.name}";
             value = mkFalconGlitchFirmware cfg;
-          }) firmwareConfigs;
+          }) firmwareConfigs) ++
+          (map (cfg: {
+            name = "noglitch_${cfg.name}";
+            value = mkFalconNoglitchFirmware cfg;
+          }) firmwareNoglitchConfigs);
 
         firmwarePackages = builtins.listToAttrs firmwarePackageList;
 

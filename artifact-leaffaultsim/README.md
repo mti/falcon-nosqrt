@@ -2,6 +2,8 @@
 
 This artifact contains the code used to simulate the statistical key-recovery attack against Falcon when one leaf of the Falcon tree is modified.  Given a Falcon key and a chosen faulty leaf value, the program generates signatures from the corresponding faulty signing distribution, applies the PCA-based recovery strategy described in the paper, and attempts to recover the secret key.
 
+One can test if a candidate recovered secret key is correct (up to equivalence) by checking that it satisfies the public key equation. For simplicity's sake, the code in this artifact simply compares against the actual secret key (using the `is_correct_test` predicate).
+
 The artifact is packaged as a Nix flake.  The flake downloads the reference Falcon implementation, applies the small patch needed by the simulator, builds the C++ key-recovery code together with the Falcon code, and supplies Eigen through `nixpkgs` rather than vendoring it in the artifact.
 
 ## Requirements
